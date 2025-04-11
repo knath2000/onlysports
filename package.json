@@ -2,5 +2,10 @@
   "private": true,
   "scripts": {
     "build": "sh build.sh"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.0",
+    "@vercel/node": "^5.1.14",
+    "axios": "^1.8.4"
   }
 }

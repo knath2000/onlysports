@@ -5,9 +5,8 @@ import '../domain/match_repository.dart';
 // API implementation of MatchRepository using Firebase Function Proxy
 class ApiMatchRepository implements MatchRepository {
   final Dio _dio;
-  // URL of the deployed Firebase Function proxy
-  final String _proxyUrl =
-      'https://us-central1-onlysports-e9b57.cloudfunctions.net/footballDataProxy';
+  // Relative path to the Vercel Serverless Function proxy
+  final String _proxyPath = '/api/footballDataProxy';
 
   ApiMatchRepository(this._dio) {
     // No need to set base URL or auth token here anymore,
@@ -26,7 +25,7 @@ class ApiMatchRepository implements MatchRepository {
     Map<String, dynamic>? queryParams,
   ) async {
     return await _dio.post(
-      _proxyUrl,
+      _proxyPath, // Use the relative path for Vercel proxy
       data: {
         'path': targetPath, // e.g., "/competitions/PL/matches"
         'params': queryParams, // e.g., { "status": "SCHEDULED" }
