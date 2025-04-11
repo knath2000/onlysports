@@ -19,11 +19,9 @@ flutter build web --release
 
 echo "Flutter web build complete."
 
-# 4. Copy build output to Vercel's expected directory (usually 'public' or root)
-# Vercel often expects output in the root or a 'public' folder.
-# Since our output is in 'build/web', we copy it to the root for Vercel to find.
-# Adjust if Vercel expects a different output location based on project settings.
-echo "Copying build output..."
-cp -r build/web/* . 
+# 4. Create the 'public' directory expected by Vercel and copy build output
+echo "Preparing output for Vercel..."
+mkdir public # Create the public directory
+cp -r build/web/* public/ # Copy contents of build/web into public/
 
 echo "Build script finished."
