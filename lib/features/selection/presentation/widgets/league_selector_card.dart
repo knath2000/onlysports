@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../matches/domain/match.dart' show CompetitionRef;
+import 'package:cached_network_image/cached_network_image.dart'; // Import
 
 class LeagueSelectorCard extends StatelessWidget {
   final CompetitionRef league;
@@ -12,6 +13,15 @@ class LeagueSelectorCard extends StatelessWidget {
     required this.isSelected,
     required this.onTap,
   });
+
+  // Helper to build the placeholder icon consistently
+  Widget _buildPlaceholderIcon(ThemeData theme, bool isSelected) {
+    return Icon(
+      Icons.shield,
+      size: 40,
+      color: isSelected ? theme.primaryColor : theme.colorScheme.secondary,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,13 +56,30 @@ class LeagueSelectorCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               // Placeholder for League Icon/Logo
-              Icon(
-                Icons.shield, // Placeholder icon
-                size: 40,
-                color:
-                    isSelected
-                        ? theme.primaryColor
-                        : theme.colorScheme.secondary,
+              SizedBox(
+                // Constrain size
+                width: 40,
+                height: 40,
+                child:
+                    (league.emblem != null && league.emblem!.trim().isNotEmpty)
+                        ? CachedNetworkImage(
+                          imageUrl:
+                              '/api/crestProxy?url=${Uri.encodeComponent(league.emblem!.trim())}',
+                          placeholder:
+                              (context, url) =>
+                                  _buildPlaceholderIcon(theme, isSelected),
+                          errorWidget: (context, url, error) {
+                            print(
+                              "Error loading league emblem via proxy: $url, Error: $error",
+                            );
+                            return _buildPlaceholderIcon(theme, isSelected);
+                          },
+                          fit: BoxFit.contain,
+                        )
+                        : _buildPlaceholderIcon(
+                          theme,
+                          isSelected,
+                        ), // Show placeholder directly
               ),
               const SizedBox(height: 8),
               Text(

@@ -65,7 +65,11 @@ class CompetitionRef {
   @HiveField(1)
   final String name;
 
-  CompetitionRef({required this.id, required this.name});
+  @HiveField(2) // Next available index
+  @JsonKey(name: 'emblem')
+  final String? emblem;
+
+  CompetitionRef({required this.id, required this.name, this.emblem});
 
   factory CompetitionRef.fromJson(Map<String, dynamic> json) =>
       _$CompetitionRefFromJson(json);

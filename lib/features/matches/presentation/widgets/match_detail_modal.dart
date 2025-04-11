@@ -85,37 +85,59 @@ class _MatchDetailModalState extends ConsumerState<MatchDetailModal> {
                           // Constrain size
                           width: 50,
                           height: 50,
-                          child: CachedNetworkImage(
-                            imageUrl: match.homeTeam.crest ?? '',
-                            placeholder:
-                                (context, url) => _ModalTeamLogoPlaceholder(
-                                  teamColor: theme.primaryColor,
-                                ),
-                            errorWidget:
-                                (context, url, error) =>
-                                    _ModalTeamLogoPlaceholder(
-                                      teamColor: theme.primaryColor,
-                                    ),
-                            fit: BoxFit.contain,
-                          ),
+                          child:
+                              (match.homeTeam.crest != null &&
+                                      match.homeTeam.crest!.isNotEmpty)
+                                  ? CachedNetworkImage(
+                                    imageUrl:
+                                        '/api/crestProxy?url=${Uri.encodeComponent(match.homeTeam.crest!)}',
+                                    placeholder:
+                                        (context, url) =>
+                                            _ModalTeamLogoPlaceholder(
+                                              teamColor: theme.primaryColor,
+                                            ),
+                                    errorWidget:
+                                        (context, url, error) =>
+                                            _ModalTeamLogoPlaceholder(
+                                              teamColor: theme.primaryColor,
+                                            ),
+                                    fit: BoxFit.contain,
+                                  )
+                                  : _ModalTeamLogoPlaceholder(
+                                    // Show placeholder directly
+                                    teamColor: theme.primaryColor,
+                                  ),
                         ),
                         SizedBox(
                           // Constrain size
                           width: 50,
                           height: 50,
-                          child: CachedNetworkImage(
-                            imageUrl: match.awayTeam.crest ?? '',
-                            placeholder:
-                                (context, url) => _ModalTeamLogoPlaceholder(
-                                  teamColor: theme.colorScheme.secondary,
-                                ),
-                            errorWidget:
-                                (context, url, error) =>
-                                    _ModalTeamLogoPlaceholder(
-                                      teamColor: theme.colorScheme.secondary,
-                                    ),
-                            fit: BoxFit.contain,
-                          ),
+                          child:
+                              (match.awayTeam.crest != null &&
+                                      match.awayTeam.crest!.isNotEmpty)
+                                  ? CachedNetworkImage(
+                                    imageUrl:
+                                        '/api/crestProxy?url=${Uri.encodeComponent(match.awayTeam.crest!.trim())}',
+                                    placeholder:
+                                        (context, url) =>
+                                            _ModalTeamLogoPlaceholder(
+                                              teamColor:
+                                                  theme.colorScheme.secondary,
+                                            ),
+                                    errorWidget: (context, url, error) {
+                                      print(
+                                        "Error loading image via proxy: $url, Error: $error",
+                                      );
+                                      return _ModalTeamLogoPlaceholder(
+                                        teamColor: theme.colorScheme.secondary,
+                                      );
+                                    },
+                                    fit: BoxFit.contain,
+                                  )
+                                  : _ModalTeamLogoPlaceholder(
+                                    // Show placeholder directly
+                                    teamColor: theme.colorScheme.secondary,
+                                  ),
                         ),
                       ],
                     ),

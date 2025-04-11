@@ -201,7 +201,8 @@ class _MatchListItemState extends ConsumerState<MatchListItem>
                         width: 36,
                         height: 36,
                         child: CachedNetworkImage(
-                          imageUrl: match.homeTeam.crest ?? '',
+                          imageUrl:
+                              '/api/crestProxy?url=${Uri.encodeComponent(match.homeTeam.crest ?? '')}',
                           placeholder:
                               (context, url) => _TeamLogoPlaceholder(
                                 teamColor: theme.primaryColor,
@@ -219,7 +220,8 @@ class _MatchListItemState extends ConsumerState<MatchListItem>
                         width: 36,
                         height: 36,
                         child: CachedNetworkImage(
-                          imageUrl: match.awayTeam.crest ?? '',
+                          imageUrl:
+                              '/api/crestProxy?url=${Uri.encodeComponent(match.awayTeam.crest ?? '')}',
                           placeholder:
                               (context, url) => _TeamLogoPlaceholder(
                                 teamColor: theme.colorScheme.secondary,
@@ -380,7 +382,8 @@ class _MatchListItemState extends ConsumerState<MatchListItem>
                   width: 36,
                   height: 36,
                   child: CachedNetworkImage(
-                    imageUrl: match.homeTeam.crest ?? '',
+                    imageUrl:
+                        '/api/crestProxy?url=${Uri.encodeComponent(match.homeTeam.crest ?? '')}',
                     placeholder:
                         (context, url) =>
                             _TeamLogoPlaceholder(teamColor: theme.primaryColor),
@@ -392,21 +395,28 @@ class _MatchListItemState extends ConsumerState<MatchListItem>
                 ),
                 const SizedBox(height: 8),
                 SizedBox(
-                  // Wrap with SizedBox to constrain size
                   width: 36,
                   height: 36,
-                  child: CachedNetworkImage(
-                    imageUrl: match.awayTeam.crest ?? '',
-                    placeholder:
-                        (context, url) => _TeamLogoPlaceholder(
-                          teamColor: theme.colorScheme.secondary,
-                        ),
-                    errorWidget:
-                        (context, url, error) => _TeamLogoPlaceholder(
-                          teamColor: theme.colorScheme.secondary,
-                        ),
-                    fit: BoxFit.contain, // Or BoxFit.cover
-                  ),
+                  child:
+                      (match.awayTeam.crest != null &&
+                              match.awayTeam.crest!.isNotEmpty)
+                          ? CachedNetworkImage(
+                            imageUrl:
+                                '/api/crestProxy?url=${Uri.encodeComponent(match.awayTeam.crest!)}',
+                            placeholder:
+                                (context, url) => _TeamLogoPlaceholder(
+                                  teamColor: theme.colorScheme.secondary,
+                                ),
+                            errorWidget:
+                                (context, url, error) => _TeamLogoPlaceholder(
+                                  teamColor: theme.colorScheme.secondary,
+                                ),
+                            fit: BoxFit.contain, // Or BoxFit.cover
+                          )
+                          : _TeamLogoPlaceholder(
+                            // Show placeholder directly if no crest URL
+                            teamColor: theme.colorScheme.secondary,
+                          ),
                 ),
               ],
             ),
@@ -502,6 +512,36 @@ class _MatchListItemState extends ConsumerState<MatchListItem>
         ), // End Row
       ), // End Padding
     ); // End InkWell
+  }
+
+  // Helper widget to build the crest image or placeholder
+  Widget _buildCrestImage({
+    required BuildContext context,
+    required ThemeData theme,
+    required String? crestUrl,
+    required Color placeholderColor,
+  }) {
+    if (crestUrl != null && crestUrl.trim().isNotEmpty) {
+      // Added trim() for extra safety
+      // Construct the final URL only if crestUrl is valid
+      final String proxyUrl =
+          '/api/crestProxy?url=${Uri.encodeComponent(crestUrl.trim())}';
+      return CachedNetworkImage(
+        imageUrl: proxyUrl, // Use the constructed valid proxy URL
+        placeholder:
+            (context, url) => _TeamLogoPlaceholder(teamColor: placeholderColor),
+        errorWidget: (context, url, error) {
+          print(
+            "Error loading image via proxy: $url, Error: $error",
+          ); // Add logging
+          return _TeamLogoPlaceholder(teamColor: placeholderColor);
+        },
+        fit: BoxFit.contain,
+      );
+    } else {
+      // Otherwise, return the placeholder directly
+      return _TeamLogoPlaceholder(teamColor: placeholderColor);
+    }
   }
 }
 

@@ -80,17 +80,20 @@ class CompetitionRefAdapter extends TypeAdapter<CompetitionRef> {
     return CompetitionRef(
       id: fields[0] as int,
       name: fields[1] as String,
+      emblem: fields[2] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, CompetitionRef obj) {
     writer
-      ..writeByte(2)
+      ..writeByte(3)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
-      ..write(obj.name);
+      ..write(obj.name)
+      ..writeByte(2)
+      ..write(obj.emblem);
   }
 
   @override
@@ -243,6 +246,7 @@ CompetitionRef _$CompetitionRefFromJson(Map<String, dynamic> json) =>
     CompetitionRef(
       id: (json['id'] as num).toInt(),
       name: json['name'] as String,
+      emblem: json['emblem'] as String?,
     );
 
 TeamRef _$TeamRefFromJson(Map<String, dynamic> json) => TeamRef(
