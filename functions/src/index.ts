@@ -8,13 +8,14 @@ import cors from "cors";
 const corsHandler = cors({origin: true});
 
 // Access token via process.env (set via functions:config:set)
-// eslint-disable-next-line max-len
 const FOOTBALL_DATA_API_TOKEN = process.env.FOOTBALL_DATA_TOKEN;
 const FOOTBALL_DATA_BASE_URL = "https://api.football-data.org/v4";
 
 export const footballDataProxy = functions.https.onRequest(
   (request, response) => {
     corsHandler(request, response, async () => {
+      // Log the environment variable value AS SEEN BY THIS INVOCATION
+      console.log(`FOOTBALL_DATA_TOKEN from env: ${process.env.FOOTBALL_DATA_TOKEN}`);
       try {
         if (request.method !== "POST") {
           response.status(405).send("Method Not Allowed");
