@@ -5,6 +5,8 @@ import '../../domain/match.dart' as domain; // Import custom Match with prefix
 import '../widgets/match_list_item.dart'; // Import list item widget
 import '../../../selection/presentation/selection_screen.dart'; // Import SelectionScreen for navigation
 import '../../../favorites/domain/favorite.dart'; // Import Favorite model
+import '../../../../shared/widgets/shared_loading_indicator.dart'; // Import shared loading
+import '../../../../shared/widgets/shared_error_message.dart'; // Import shared error
 
 // Displays lists of upcoming and previous matches using Tabs
 class MatchListScreen extends ConsumerStatefulWidget {
@@ -35,7 +37,8 @@ class _MatchListScreenState extends ConsumerState<MatchListScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Matches'), // Changed title
+        title: const Text('Matches'),
+        centerTitle: true, // Center the title
         bottom: TabBar(
           controller: _tabController,
           tabs: const [Tab(text: 'Upcoming'), Tab(text: 'Previous')],
@@ -136,13 +139,16 @@ class _MatchListScreenState extends ConsumerState<MatchListScreen>
           },
         );
       },
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stackTrace) {
-        // TODO: Improve error display
-        print('Error loading matches: $error');
-        print(stackTrace);
-        return Center(child: Text('Error loading matches: $error'));
-      },
+      // Use shared loading indicator
+      loading: () => const SharedLoadingIndicator(),
+      // Use shared error message widget with retry callback
+      error:
+          (error, stackTrace) => SharedErrorMessage(
+            error: 'Failed to load matches: $error',
+            onRetry:
+                () =>
+                    ref.refresh(provider), // Use the passed provider for retry
+          ),
     );
   }
 }

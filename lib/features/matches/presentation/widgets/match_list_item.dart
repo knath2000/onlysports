@@ -45,12 +45,19 @@ class MatchListItem extends ConsumerWidget {
       leading: Column(
         // Example layout
         mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment:
+            CrossAxisAlignment.center, // Center text horizontally
         children: [
           Text(
             dateFormat.format(localDate),
             style: Theme.of(context).textTheme.bodySmall,
+            textAlign: TextAlign.center, // Center align text
           ),
-          Text(scoreOrTime, style: Theme.of(context).textTheme.titleMedium),
+          Text(
+            scoreOrTime,
+            style: Theme.of(context).textTheme.titleMedium,
+            textAlign: TextAlign.center, // Center align text
+          ),
         ],
       ),
       title: Text(
@@ -58,10 +65,12 @@ class MatchListItem extends ConsumerWidget {
         style: Theme.of(context).textTheme.titleMedium, // Use theme style
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
+        textAlign: TextAlign.center, // Center align text
       ),
       subtitle: Text(
         match.competitionRef.name, // Show competition name
         style: Theme.of(context).textTheme.bodySmall, // Use theme style
+        textAlign: TextAlign.center, // Center align text
       ),
       trailing: Consumer(
         // Use Consumer to rebuild only the icon button
