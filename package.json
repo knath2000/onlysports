@@ -4,6 +4,7 @@
     "build": "sh build.sh"
   },
   "devDependencies": {
+    "@google/generative-ai": "^0.24.0",
     "@types/node": "^22.14.0",
     "@vercel/node": "^5.1.14",
     "axios": "^1.8.4"

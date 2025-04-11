@@ -10,6 +10,7 @@ import '../features/selection/domain/selection_repository.dart';
 import '../features/selection/infrastructure/hive_selection_repository.dart';
 import '../features/selection/domain/user_selection.dart';
 import '../features/favorites/domain/favorite.dart'; // Import Favorite model
+import 'dart:convert'; // Import for jsonEncode
 
 // Provider for the Dio instance (HTTP client)
 final dioProvider = Provider<Dio>((ref) {
@@ -139,4 +140,59 @@ final availableLeaguesProvider =
     FutureProvider.autoDispose<List<domain.CompetitionRef>>((ref) {
       final repository = ref.watch(matchRepositoryProvider);
       return repository.getAvailableLeagues();
+    });
+
+// --- Gemini Prediction Provider ---
+
+// Provider to fetch match prediction from the Gemini API via our proxy
+final geminiPredictionProvider = FutureProvider.autoDispose
+    .family<String, Map<String, String>>((ref, matchDetails) async {
+      final dio = ref.watch(dioProvider);
+      final apiUrl = '/api/geminiPrediction'; // Relative path for Vercel proxy
+
+      // Ensure required details are present
+      if (!matchDetails.containsKey('homeTeamName') ||
+          !matchDetails.containsKey('awayTeamName') ||
+          !matchDetails.containsKey('competitionName')) {
+        throw ArgumentError('Missing required match details for prediction.');
+      }
+
+      try {
+        final response = await dio.post(
+          apiUrl,
+          data: jsonEncode({
+            'homeTeamName': matchDetails['homeTeamName'],
+            'awayTeamName': matchDetails['awayTeamName'],
+            'competitionName': matchDetails['competitionName'],
+          }),
+          options: Options(headers: {'Content-Type': 'application/json'}),
+        );
+
+        if (response.statusCode == 200 && response.data is Map) {
+          final prediction = response.data['prediction'] as String?;
+          if (prediction != null && prediction.isNotEmpty) {
+            return prediction;
+          } else {
+            throw Exception('Prediction not found or empty in API response.');
+          }
+        } else {
+          throw DioException(
+            requestOptions: response.requestOptions,
+            response: response,
+            error:
+                'Failed to get prediction: Status code ${response.statusCode}',
+          );
+        }
+      } on DioException catch (e) {
+        // Log or handle Dio-specific errors
+        print('DioError fetching prediction: ${e.message}');
+        print('Response data: ${e.response?.data}');
+        throw Exception('Failed to fetch prediction: ${e.message}');
+      } catch (e) {
+        // Catch other potential errors
+        print('Error fetching prediction: $e');
+        throw Exception(
+          'An unexpected error occurred while fetching the prediction.',
+        );
+      }
     });

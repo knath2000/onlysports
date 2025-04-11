@@ -216,7 +216,66 @@ class _MatchDetailModalState extends ConsumerState<MatchDetailModal> {
                       ),
                       const SizedBox(height: 16),
                     ],
-                    // TODO: Add other details if needed
+
+                    // --- Gemini Prediction Section ---
+                    const Divider(color: Colors.white30, height: 24),
+                    Text(
+                      'AI Prediction',
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        color: Colors.white,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 8),
+                    Consumer(
+                      // Use Consumer to watch the prediction provider
+                      builder: (context, ref, child) {
+                        // Prepare input for the provider
+                        final predictionInput = {
+                          'homeTeamName': match.homeTeam.name,
+                          'awayTeamName': match.awayTeam.name,
+                          'competitionName': match.competitionRef.name,
+                        };
+                        // Watch the prediction provider
+                        final predictionAsync = ref.watch(
+                          geminiPredictionProvider(predictionInput),
+                        );
+
+                        // Use .when to handle states
+                        return predictionAsync.when(
+                          data:
+                              (prediction) => Text(
+                                prediction,
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: Colors.white,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                          loading:
+                              () => const Center(
+                                child: SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                          error:
+                              (error, stack) => Text(
+                                'Prediction unavailable: ${error.toString()}', // Show error message
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: Colors.redAccent,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 16), // Spacing after prediction
+
+                    // --- End Gemini Prediction Section ---
                   ],
                 ),
               );

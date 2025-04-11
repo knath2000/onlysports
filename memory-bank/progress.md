@@ -23,6 +23,7 @@
 23| *   Ability to change league selection from main screen (via edit button).
 24| *   Skeleton loading states using `skeletonizer` for lists and modal.
 25| *   Displaying Team Crests & League Emblems (via Vercel proxy for CORS).
+26| *   Centered Match List with constrained width.
 26| ## 3. What's Next (High Level)
 27| *   Performance Optimization & Profiling (Based on current report).
 28| *   UI/UX Polish (Refine gradient theme, custom components, glossy effects?).
