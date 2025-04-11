@@ -63,6 +63,7 @@ class _MatchListScreenState extends ConsumerState<MatchListScreen>
         ],
       ),
       body: TabBarView(
+        // Restore TabBarView
         controller: _tabController,
         children: [
           // Upcoming Matches List
