@@ -1,43 +1,42 @@
 # Progress Tracker: Dynamic Sports Match Tracker
 
 **Version:** 1.0 (Initial)
-**Date:** 2025-04-11
+**Date:** 2025-04-11 (Updated after Gradient BG, Modal, Skeletons)
 
-## 1. Current Status (End of Phase 1)
-*   Completed initial 12-step development plan (`PLAN.md`).
-*   Core functionality for Soccer (Phase 1) is implemented at a basic level.
-*   Application builds and runs on Web, macOS, iOS.
+## 1. Current Status (Post-Phase 1 Refinements)
+*   Initial implementation of gradient background theme complete.
+*   Match details now shown in a modal popup with background blur.
+*   Skeleton loading screens (`skeletonizer`) implemented for main loading states.
+10| *   Local dev environment (`vercel dev`) issues resolved.
+11| *   Application builds and runs on Web, macOS, iOS with basic functionality.
 
-## 2. What Works (Basic Level)
-*   Displaying Upcoming/Previous Matches via Tabs.
-*   Fetching data from football-data.org via Firebase Proxy.
-*   Navigating to Match Detail Screen.
-*   Displaying basic match details.
-*   Basic polling for live updates on detail screen.
-*   Adding/Removing favorite teams using Hive persistence.
-*   Filtering match list by favorites (using Hive data).
-*   Basic caching of fetched match details and lists using Hive.
-*   Cross-platform builds (Web, macOS, iOS).
-*   Mandatory initial league selection screen.
-*   Ability to change league selection from main screen.
-
-## 3. What's Next (Post Phase 1 - High Level)
-*   Step 2: Research Soccer Data APIs
-*   Step 3: Research UI/Animation Inspiration & Libraries
-*   Step 4: Decide on State Management & Architecture
-*   ... (See `PLAN.md` for full list)
-
-*   UI/UX Polish (Theme, Custom Components, Animations - Rive).
-*   Robust Filtering Implementation.
-*   Performance Optimization & Profiling.
-*   Improved Error Handling & Loading States.
-*   Code Refinement (Address TODOs, API Key Security).
-
+13| ## 2. What Works
+14| *   Displaying Upcoming/Previous Matches via Tabs (with gradient background).
+15| *   Fetching data from football-data.org via Vercel Proxy (`vercel dev` locally).
+16| *   Displaying match details in a modal popup with background blur.
+17| *   Adding/Removing favorite teams using Hive persistence (via star button).
+18| *   Drag-and-drop favoriting (MatchListItem -> Drop Target on MatchListScreen).
+19| *   Filtering match list by favorites (using toggle button).
+20| *   Basic caching of fetched match details and lists using Hive.
+21| *   Cross-platform builds (Web, macOS, iOS).
+22| *   Mandatory initial league selection screen (with visual selector).
+23| *   Ability to change league selection from main screen (via edit button).
+24| *   Skeleton loading states using `skeletonizer` for lists and modal.
+26| ## 3. What's Next (High Level)
+27| *   Performance Optimization & Profiling (Based on current report).
+28| *   UI/UX Polish (Refine gradient theme, custom components, glossy effects?).
+29| *   Implement complex animations using Rive.
+30| *   Implement robust filtering for match lists.
+31| *   Improve error handling.
+32| *   Code Refinement (Address TODOs).
+33| *   Update core Memory Bank docs (`projectbrief.md`, `productContext.md`) to match current gradient theme direction.
 ## 4. Known Issues / Blockers
 *   ~~API Key currently hardcoded in Firebase Function (Security Risk).~~ (Fixed - Moved to Vercel env var)
 *   Polling for live updates is basic and subject to rate limits/API update frequency.
-*   UI is basic, lacks the planned custom components and animations.
-*   Filtering logic is basic (only home/away team ID).
+40| *   UI lacks final polish (custom components, glossy effects, refined animations).
+41| *   Filtering logic is basic (only home/away team ID via toggle).
+42| *   Drag-and-drop target area is the whole list view, could be refined.
+43| *   Skeleton loading appearance might need tweaking.
 
 ## 5. Key Milestones Reached (Phase 1)
 *   Project Plan Finalized (2025-04-11)
@@ -49,6 +48,11 @@
 *   Implemented Mandatory League Selection & Change Flow (2025-04-11)
 *   Fixed Previous Match Score Display Logic (Corrected JSON keys) (2025-04-11)
 *   Refactored UI Alignment (Centered AppBar Title & List Item Text) (2025-04-11)
+*   Implemented Gradient Background Theme (2025-04-11)
+*   Implemented Modal Match Details w/ Blur (2025-04-11)
+*   Implemented Drag-and-Drop Favoriting (Basic) (2025-04-11)
+*   Implemented Skeleton Loading (`skeletonizer`) (2025-04-11)
+*   Fixed `vercel dev` Build Script (2025-04-11)
 
 ## 6. Performance Notes (Initial - Post Lighthouse)
 *   Release builds completed successfully for all platforms.

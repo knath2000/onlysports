@@ -18,9 +18,10 @@ class MyApp extends ConsumerWidget {
     // TODO: Apply theme from AppTheme
     return MaterialApp(
       title: 'Dynamic Sports Match Tracker',
-      theme: AppTheme.lightTheme, // Placeholder
-      darkTheme: AppTheme.darkTheme, // Use the dark theme
-      themeMode: ThemeMode.dark, // Enforce dark mode initially
+      theme: AppTheme().gradientTheme, // Use the new gradient theme
+      // darkTheme: AppTheme.darkTheme, // Keep the old dark theme stub if needed for reference
+      themeMode:
+          ThemeMode.dark, // Use dark mode to ensure gradientTheme is selected
       home:
           const InitialRouteDispatcher(), // Use the dispatcher to decide initial screen
     );

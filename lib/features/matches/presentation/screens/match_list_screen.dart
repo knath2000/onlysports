@@ -1,12 +1,50 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../app/providers.dart'; // Import providers
+import '../../../../app/theme/app_theme.dart'; // Import AppTheme
 import '../../domain/match.dart' as domain; // Import custom Match with prefix
 import '../widgets/match_list_item.dart'; // Import list item widget
 import '../../../selection/presentation/selection_screen.dart'; // Import SelectionScreen for navigation
 import '../../../favorites/domain/favorite.dart'; // Import Favorite model
-import '../../../../shared/widgets/shared_loading_indicator.dart'; // Import shared loading
+import '../../../favorites/application/favorites_notifier.dart'; // Import for DragTarget
+
+// import '../../../../shared/widgets/shared_loading_indicator.dart'; // No longer needed
+import 'package:skeletonizer/skeletonizer.dart'; // Import skeletonizer
 import '../../../../shared/widgets/shared_error_message.dart'; // Import shared error
+
+// Placeholder for custom action buttons in the header
+class _CustomActionButtonPlaceholder extends StatelessWidget {
+  final IconData icon;
+  final String tooltip;
+  final VoidCallback onTap;
+  final bool? isSelected; // Optional for toggle buttons
+
+  const _CustomActionButtonPlaceholder({
+    required this.icon,
+    required this.tooltip,
+    required this.onTap,
+    this.isSelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final color =
+        isSelected == true
+            ? theme
+                .primaryColor // Highlight if selected
+            : theme.iconTheme.color ?? theme.primaryColor;
+
+    return IconButton(
+      icon: Icon(icon, color: color, size: 28), // Use theme color, larger size
+      tooltip: tooltip,
+      onPressed: onTap,
+      // Add padding/constraints if needed for larger tap area
+      padding: EdgeInsets.zero,
+      constraints: const BoxConstraints(minWidth: 44, minHeight: 44),
+    );
+  }
+}
 
 // Displays lists of upcoming and previous matches using Tabs
 class MatchListScreen extends ConsumerStatefulWidget {
@@ -35,60 +73,135 @@ class _MatchListScreenState extends ConsumerState<MatchListScreen>
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context); // Get theme
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Matches'),
-        centerTitle: true, // Center the title
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: const [Tab(text: 'Upcoming'), Tab(text: 'Previous')],
-          // Theme styling is applied via tabBarTheme in AppTheme
+      // Remove standard AppBar
+      backgroundColor: theme.scaffoldBackgroundColor, // Apply theme background
+      body: Container(
+        // Add Container for gradient
+        decoration: const BoxDecoration(
+          gradient: AppTheme.backgroundGradient, // Apply gradient
         ),
-        actions: [
-          // Add filter chip to AppBar actions
-          Padding(
-            padding: const EdgeInsets.only(right: 8.0),
-            child: FilterChip(
-              label: const Text('Favorites'),
-              selected: _showOnlyFavorites,
-              onSelected: (selected) {
-                setState(() {
-                  _showOnlyFavorites = selected;
-                  // TODO: Trigger data refresh/refiltering if necessary
-                  // This might involve ref.refresh() on providers or passing
-                  // the filter state down to the _buildMatchList helper.
-                });
-              },
-              // Theme styling is applied via chipTheme in AppTheme
-              showCheckmark: false, // Keep checkmark off for toggle style
-              // selectedColor is now handled by the theme
-            ),
-          ),
-          IconButton(
-            icon: const Icon(Icons.edit_note), // Or Icons.settings, Icons.tune
-            tooltip: 'Change League Selection',
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const SelectionScreen(),
+        child: SafeArea(
+          // Original SafeArea is now child of Container
+          // Ensure content doesn't overlap status bar/notches
+          child: Column(
+            // Use Column for custom header/tabs + TabBarView
+            children: [
+              // --- Custom Header Area ---
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16.0,
+                  vertical: 12.0,
                 ),
-              );
-            },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // Placeholder for Filter Button
+                    _CustomActionButtonPlaceholder(
+                      icon: Icons.filter_list_rounded,
+                      tooltip: 'Filter Favorites',
+                      isSelected: _showOnlyFavorites,
+                      onTap: () {
+                        setState(() {
+                          _showOnlyFavorites = !_showOnlyFavorites;
+                          // TODO: Add visual feedback/animation
+                        });
+                      },
+                    ),
+                    // Title Placeholder (can be more elaborate later)
+                    Text(
+                      'Matches',
+                      style: theme.textTheme.headlineSmall, // Use theme
+                    ),
+                    // Placeholder for Edit League Button
+                    _CustomActionButtonPlaceholder(
+                      icon: Icons.edit_rounded,
+                      tooltip: 'Change League',
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const SelectionScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+
+              // --- Custom TabBar Placeholder ---
+              // TODO: Replace with custom glossy TabBar widget
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: TabBar(
+                  // Keep standard TabBar for now, style via theme
+                  controller: _tabController,
+                  tabs: const [Tab(text: 'Upcoming'), Tab(text: 'Previous')],
+                  // Theme styling is applied via tabBarTheme in AppTheme
+                ),
+              ),
+              const Divider(height: 1, thickness: 1), // Optional separator
+              // --- TabBarView (Expanded to fill remaining space) ---
+              // --- TabBarView wrapped in DragTarget ---
+              Expanded(
+                child: DragTarget<Favorite>(
+                  builder: (context, candidateData, rejectedData) {
+                    // Provide visual feedback when dragging over
+                    final isHovering = candidateData.isNotEmpty;
+                    return Container(
+                      color:
+                          isHovering
+                              ? theme.primaryColor.withOpacity(
+                                0.1,
+                              ) // Highlight when hovering
+                              : null, // Default background
+                      child: TabBarView(
+                        // Original TabBarView
+                        controller: _tabController,
+                        children: [
+                          _buildMatchList(upcomingMatchesProvider),
+                          _buildMatchList(previousMatchesProvider),
+                        ],
+                      ),
+                    );
+                  },
+                  onWillAcceptWithDetails: (details) {
+                    // Can add logic here to decide if the target should accept the data
+                    return true; // Accept any Favorite object for now
+                  },
+                  onAcceptWithDetails: (details) {
+                    final favorite = details.data;
+                    print(
+                      'Accepted favorite: ${favorite.teamName} (${favorite.teamId})',
+                    );
+                    // Add the favorite using the notifier
+                    final notifier = ref.read(
+                      favoritesNotifierProvider.notifier,
+                    );
+                    notifier.addFavorite(favorite);
+                    // Invalidate the provider for the specific team to update its star icon
+                    ref.invalidate(isFavoriteProvider(favorite.teamId));
+                    // Optional: Show a snackbar confirmation
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          '${favorite.teamName} added to favorites!',
+                        ),
+                        duration: const Duration(seconds: 2),
+                      ),
+                    );
+                  },
+                  // Optional: Add onLeave callback if needed
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
-      body: TabBarView(
-        // Restore TabBarView
-        controller: _tabController,
-        children: [
-          // Upcoming Matches List
-          _buildMatchList(upcomingMatchesProvider),
-          // Previous Matches List
-          _buildMatchList(previousMatchesProvider),
-        ],
-      ),
-    );
+        ), // Close SafeArea
+      ), // Close Container
+    ); // Close Scaffold
   }
 
   // Helper widget to build a list based on a provider
@@ -127,6 +240,7 @@ class _MatchListScreenState extends ConsumerState<MatchListScreen>
         if (filteredMatches.isEmpty && !_showOnlyFavorites) {
           return const Center(child: Text('No matches found for this view.'));
         }
+
         // --- End Filtering Logic ---
 
         // Display the list of matches
@@ -140,7 +254,36 @@ class _MatchListScreenState extends ConsumerState<MatchListScreen>
         );
       },
       // Use shared loading indicator
-      loading: () => const SharedLoadingIndicator(),
+      loading: () {
+        // Create dummy match data for the skeleton layout
+        final dummyMatch = domain.Match(
+          id: 0, // Dummy ID
+          utcDate: DateTime.now(),
+          status: 'SCHEDULED',
+          competitionRef: domain.CompetitionRef(id: 0, name: 'League Name'),
+          homeTeam: domain.TeamRef(id: 1, name: 'Home Team Name'),
+          awayTeam: domain.TeamRef(id: 2, name: 'Away Team Name'),
+          score: domain.Score(
+            // Provide dummy score structure
+            winner: null,
+            // duration: 'REGULAR', // Removed - not a parameter in Score constructor
+            fullTime: domain.ScoreTime(homeScore: null, awayScore: null),
+            halfTime: domain.ScoreTime(homeScore: null, awayScore: null),
+          ),
+        );
+
+        // Return a Skeletonizer wrapping a list of dummy MatchListItems
+        return Skeletonizer(
+          // Optional: Customize effect (e.g., shimmer: true)
+          // effect: ShimmerEffect(),
+          child: ListView.builder(
+            itemCount: 8, // Show several skeleton items
+            itemBuilder: (context, index) {
+              return MatchListItem(match: dummyMatch); // Use dummy data
+            },
+          ),
+        );
+      },
       // Use shared error message widget with retry callback
       error:
           (error, stackTrace) => SharedErrorMessage(
