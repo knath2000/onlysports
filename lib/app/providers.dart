@@ -6,6 +6,9 @@ import '../features/matches/domain/match.dart' as domain; // Import custom Match
 import 'dart:async'; // Import for Timer and StreamController
 import '../features/favorites/domain/favorites_repository.dart'; // Import Favorites interface
 import '../features/favorites/infrastructure/hive_favorites_repository.dart'; // Import Hive implementation
+import '../features/selection/domain/selection_repository.dart';
+import '../features/selection/infrastructure/hive_selection_repository.dart';
+import '../features/selection/domain/user_selection.dart';
 import '../features/favorites/domain/favorite.dart'; // Import Favorite model
 
 // Provider for the Dio instance (HTTP client)
@@ -29,21 +32,34 @@ final matchRepositoryProvider = Provider<MatchRepository>((ref) {
 // This provider could fetch the list of upcoming matches using the repository.
 // The UI would watch this provider. Using FutureProvider for simplicity here.
 // More complex state might use a StateNotifierProvider.
+// Updated to watch user selection and pass leagueId
 final upcomingMatchesProvider = FutureProvider.autoDispose<List<domain.Match>>((
   ref,
 ) async {
   final repository = ref.watch(matchRepositoryProvider);
-  // TODO: Add actual filtering parameters if needed
-  return repository.getUpcomingMatches();
+  // Watch the user's selection
+  final userSelection = ref.watch(userSelectionProvider).asData?.value;
+  final leagueId = userSelection?.selectedLeagueId;
+
+  // TODO: Decide what to do if leagueId is null (e.g., return empty list, show error, fetch default?)
+  // For now, we pass null or the selected ID to the repository, which defaults to 'PL'.
+  print('Fetching upcoming matches for league: $leagueId'); // Debug print
+  return repository.getUpcomingMatches(leagueId: leagueId);
 });
 
 // Provider for previous matches
+// Updated to watch user selection and pass leagueId
 final previousMatchesProvider = FutureProvider.autoDispose<List<domain.Match>>((
   ref,
 ) async {
   final repository = ref.watch(matchRepositoryProvider);
-  // TODO: Add actual filtering parameters if needed
-  return repository.getPreviousMatches();
+  // Watch the user's selection
+  final userSelection = ref.watch(userSelectionProvider).asData?.value;
+  final leagueId = userSelection?.selectedLeagueId;
+
+  // Pass null or the selected ID to the repository
+  print('Fetching previous matches for league: $leagueId'); // Debug print
+  return repository.getPreviousMatches(leagueId: leagueId);
 });
 
 // Provider for match details (takes matchId as parameter)
@@ -97,9 +113,30 @@ final favoritesStreamProvider = StreamProvider.autoDispose<List<Favorite>>((
 // Provider to check if a specific team is a favorite (useful for UI toggles)
 final isFavoriteProvider = FutureProvider.autoDispose.family<bool, int>((
   ref,
-  teamId,
+  teamId, // Parameter for the family
 ) async {
   final repository = ref.watch(favoritesRepositoryProvider);
   return repository.isFavorite(teamId);
 });
+
+// --- User Selection Providers ---
+
+// Provider for the SelectionRepository implementation
+final selectionRepositoryProvider = Provider<SelectionRepository>((ref) {
+  return HiveSelectionRepository();
+});
+
+// Provider to fetch the currently saved UserSelection (if any)
+// This is watched by the initial routing logic.
+final userSelectionProvider = FutureProvider.autoDispose<UserSelection?>((ref) {
+  final repository = ref.watch(selectionRepositoryProvider);
+  return repository.getSelection();
+});
 // Add other providers as needed (e.g., for state notifiers, other services)
+
+// Provider to fetch available leagues for the selection screen
+final availableLeaguesProvider =
+    FutureProvider.autoDispose<List<domain.CompetitionRef>>((ref) {
+      final repository = ref.watch(matchRepositoryProvider);
+      return repository.getAvailableLeagues();
+    });

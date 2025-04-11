@@ -39,12 +39,15 @@ class ApiMatchRepository implements MatchRepository {
 
   @override
   Future<List<Match>> getUpcomingMatches({
-    String? league,
-    String? team,
+    String? leagueId, // Updated parameter name
+    // String? team,
     DateTime? date,
   }) async {
-    // Use competition code (e.g., 'PL') or ID based on API needs
-    const competitionCode = 'PL'; // Example: Premier League code
+    // Use the provided leagueId if available, otherwise default (or handle error)
+    final competitionCode =
+        leagueId ??
+        'PL'; // Default to PL if none selected? Or throw error? Let's default for now.
+    // TODO: Consider how to handle the case where leagueId is null - maybe fetch top leagues?
     final targetPath = '/competitions/$competitionCode/matches';
     final queryParams = {
       'status': 'SCHEDULED',
@@ -85,11 +88,12 @@ class ApiMatchRepository implements MatchRepository {
 
   @override
   Future<List<Match>> getPreviousMatches({
-    String? league,
-    String? team,
+    String? leagueId, // Updated parameter name
+    // String? team,
     DateTime? date,
   }) async {
-    const competitionCode = 'PL'; // Example
+    final competitionCode = leagueId ?? 'PL'; // Default to PL if none selected?
+    // TODO: Consider how to handle the case where leagueId is null
     final targetPath = '/competitions/$competitionCode/matches';
     final queryParams = {
       'status': 'FINISHED',
@@ -161,6 +165,7 @@ class ApiMatchRepository implements MatchRepository {
           // 3. Save to Hive
           await _matchesBox.put(fetchedMatch.id, fetchedMatch);
           // 4. Emit fetched value
+
           if (!controller.isClosed) controller.add(fetchedMatch);
         } else if (response.statusCode == 404) {
           print('Match details not found (404) for ID: $matchIdInt');
@@ -210,5 +215,47 @@ class ApiMatchRepository implements MatchRepository {
 
     // Return the stream for the UI to listen to
     return controller.stream;
+  }
+
+  @override
+  Future<List<CompetitionRef>> getAvailableLeagues() async {
+    // Target the /competitions endpoint
+    const targetPath = '/competitions';
+    // Usually no query params needed, but check API docs if filtering is possible/needed
+    // e.g., filter by plan: TIER_ONE for free tier
+    final queryParams = {
+      'plan': 'TIER_ONE', // Example: Filter for free tier leagues if supported
+    };
+
+    try {
+      final response = await _callProxy(targetPath, queryParams);
+
+      if (response.statusCode == 200 && response.data != null) {
+        final List<dynamic> competitionsJson =
+            response.data['competitions'] ?? [];
+        // Map the response to CompetitionRef objects
+        // Filter out leagues without an ID or name, as they might be invalid/unusable
+        return competitionsJson
+            .map((json) => CompetitionRef.fromJson(json))
+            .where(
+              (comp) =>
+                  comp.id != null && comp.name != null && comp.name.isNotEmpty,
+            ) // Basic validation
+            .toList();
+      } else {
+        print(
+          'Proxy Error (Leagues): Status ${response.statusCode}, Data: ${response.data}',
+        );
+        throw Exception('Failed to load available leagues via proxy');
+      }
+    } on DioException catch (e) {
+      print('DioError calling proxy (Leagues): $e');
+      throw Exception(
+        'Network error fetching available leagues via proxy: ${e.message}',
+      );
+    } catch (e) {
+      print('Error processing proxy response (Leagues): $e');
+      throw Exception('Failed to process available leagues data via proxy');
+    }
   }
 }

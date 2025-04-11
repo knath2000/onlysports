@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'; // Placeholder - add dependency later
 import 'theme/app_theme.dart';
-import '../features/matches/presentation/screens/match_list_screen.dart'; // Import the screen
+import 'initial_route_dispatcher.dart'; // Import the new initial router
 
 // Placeholder for the main application widget
 // This will likely be a ConsumerWidget or StatelessWidget that sets up MaterialApp
@@ -21,7 +21,8 @@ class MyApp extends ConsumerWidget {
       theme: AppTheme.lightTheme, // Placeholder
       darkTheme: AppTheme.darkTheme, // Use the dark theme
       themeMode: ThemeMode.dark, // Enforce dark mode initially
-      home: const MatchListScreen(), // Set MatchListScreen as home
+      home:
+          const InitialRouteDispatcher(), // Use the dispatcher to decide initial screen
     );
   }
 }

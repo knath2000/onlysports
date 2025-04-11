@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart'; // Import Riverpod
 import 'package:hive_flutter/hive_flutter.dart'; // Import Hive Flutter
 import 'app/app.dart'; // Import our main App widget
 import 'features/favorites/domain/favorite.dart'; // Import Favorite model
+import 'features/selection/domain/user_selection.dart'; // Import UserSelection model
 import 'features/matches/domain/match.dart'; // Import Match model & related
 
 Future<void> main() async {
@@ -20,10 +21,16 @@ Future<void> main() async {
   Hive.registerAdapter(TeamRefAdapter());
   Hive.registerAdapter(ScoreAdapter());
   Hive.registerAdapter(ScoreTimeAdapter());
+  Hive.registerAdapter(
+    UserSelectionAdapter(),
+  ); // Register UserSelection adapter
 
   // Open Hive Boxes
   await Hive.openBox<Favorite>('favoritesBox');
   await Hive.openBox<Match>('matchesBox');
+  await Hive.openBox<UserSelection>(
+    'userSelectionBox',
+  ); // Open UserSelection box
 
   // Wrap the entire application in a ProviderScope
   runApp(
