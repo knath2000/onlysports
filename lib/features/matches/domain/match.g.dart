@@ -117,17 +117,20 @@ class TeamRefAdapter extends TypeAdapter<TeamRef> {
     return TeamRef(
       id: fields[0] as int,
       name: fields[1] as String,
+      crest: fields[2] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, TeamRef obj) {
     writer
-      ..writeByte(2)
+      ..writeByte(3)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
-      ..write(obj.name);
+      ..write(obj.name)
+      ..writeByte(2)
+      ..write(obj.crest);
   }
 
   @override
@@ -245,6 +248,7 @@ CompetitionRef _$CompetitionRefFromJson(Map<String, dynamic> json) =>
 TeamRef _$TeamRefFromJson(Map<String, dynamic> json) => TeamRef(
       id: (json['id'] as num).toInt(),
       name: json['name'] as String,
+      crest: json['crest'] as String?,
     );
 
 Score _$ScoreFromJson(Map<String, dynamic> json) => Score(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../../../app/providers.dart';
+import 'package:cached_network_image/cached_network_image.dart'; // Import CachedNetworkImage
 import '../../../../app/theme/app_theme.dart'; // Import theme for gradient
 // import '../../../../shared/widgets/shared_loading_indicator.dart'; // No longer needed
 import 'package:skeletonizer/skeletonizer.dart'; // Import skeletonizer
@@ -76,6 +77,51 @@ class _MatchDetailModalState extends ConsumerState<MatchDetailModal> {
                   shrinkWrap: true, // Make ListView take minimum height
                   children: [
                     // Header (Teams)
+                    // --- Add Crests Row ---
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        SizedBox(
+                          // Constrain size
+                          width: 50,
+                          height: 50,
+                          child: CachedNetworkImage(
+                            imageUrl: match.homeTeam.crest ?? '',
+                            placeholder:
+                                (context, url) => _ModalTeamLogoPlaceholder(
+                                  teamColor: theme.primaryColor,
+                                ),
+                            errorWidget:
+                                (context, url, error) =>
+                                    _ModalTeamLogoPlaceholder(
+                                      teamColor: theme.primaryColor,
+                                    ),
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                        SizedBox(
+                          // Constrain size
+                          width: 50,
+                          height: 50,
+                          child: CachedNetworkImage(
+                            imageUrl: match.awayTeam.crest ?? '',
+                            placeholder:
+                                (context, url) => _ModalTeamLogoPlaceholder(
+                                  teamColor: theme.colorScheme.secondary,
+                                ),
+                            errorWidget:
+                                (context, url, error) =>
+                                    _ModalTeamLogoPlaceholder(
+                                      teamColor: theme.colorScheme.secondary,
+                                    ),
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 12,
+                    ), // Spacing between crests and names
                     Text(
                       '${match.homeTeam.name} vs ${match.awayTeam.name}',
                       style: theme.textTheme.headlineSmall?.copyWith(
@@ -290,6 +336,30 @@ class _MatchDetailModalState extends ConsumerState<MatchDetailModal> {
           ),
         ),
       ],
+    );
+  }
+}
+
+// Helper widget for team logo placeholder within the modal
+class _ModalTeamLogoPlaceholder extends StatelessWidget {
+  final Color teamColor;
+  const _ModalTeamLogoPlaceholder({required this.teamColor});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 50, // Match SizedBox size
+      height: 50,
+      decoration: BoxDecoration(
+        color: teamColor.withOpacity(0.1),
+        shape: BoxShape.circle,
+        border: Border.all(color: teamColor, width: 1.5),
+      ),
+      child: Icon(
+        Icons.shield, // Placeholder icon
+        color: teamColor,
+        size: 28, // Adjust icon size within placeholder
+      ),
     );
   }
 }

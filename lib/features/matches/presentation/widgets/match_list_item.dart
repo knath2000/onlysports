@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart'; // Import Riverpod
 import 'package:intl/intl.dart';
 import 'dart:ui'; // Import for ImageFilter
 import '../../domain/match.dart' as domain;
+import 'package:cached_network_image/cached_network_image.dart'; // Import CachedNetworkImage
 import '../../../../app/providers.dart'; // Import global providers
 import '../../../favorites/application/favorites_notifier.dart'; // Import favorites notifier
 import '../../../favorites/domain/favorite.dart'; // Import Favorite model
@@ -195,10 +196,40 @@ class _MatchListItemState extends ConsumerState<MatchListItem>
                   // --- Left Column: Team Logos ---
                   Column(
                     children: [
-                      _TeamLogoPlaceholder(teamColor: theme.primaryColor),
+                      SizedBox(
+                        // Wrap with SizedBox to constrain size
+                        width: 36,
+                        height: 36,
+                        child: CachedNetworkImage(
+                          imageUrl: match.homeTeam.crest ?? '',
+                          placeholder:
+                              (context, url) => _TeamLogoPlaceholder(
+                                teamColor: theme.primaryColor,
+                              ),
+                          errorWidget:
+                              (context, url, error) => _TeamLogoPlaceholder(
+                                teamColor: theme.primaryColor,
+                              ),
+                          fit: BoxFit.contain, // Or BoxFit.cover
+                        ),
+                      ),
                       const SizedBox(height: 8),
-                      _TeamLogoPlaceholder(
-                        teamColor: theme.colorScheme.secondary,
+                      SizedBox(
+                        // Wrap with SizedBox to constrain size
+                        width: 36,
+                        height: 36,
+                        child: CachedNetworkImage(
+                          imageUrl: match.awayTeam.crest ?? '',
+                          placeholder:
+                              (context, url) => _TeamLogoPlaceholder(
+                                teamColor: theme.colorScheme.secondary,
+                              ),
+                          errorWidget:
+                              (context, url, error) => _TeamLogoPlaceholder(
+                                teamColor: theme.colorScheme.secondary,
+                              ),
+                          fit: BoxFit.contain, // Or BoxFit.cover
+                        ),
                       ),
                     ],
                   ),
@@ -344,9 +375,39 @@ class _MatchListItemState extends ConsumerState<MatchListItem>
             // --- Left Column: Team Logos ---
             Column(
               children: [
-                _TeamLogoPlaceholder(teamColor: theme.primaryColor),
+                SizedBox(
+                  // Wrap with SizedBox to constrain size
+                  width: 36,
+                  height: 36,
+                  child: CachedNetworkImage(
+                    imageUrl: match.homeTeam.crest ?? '',
+                    placeholder:
+                        (context, url) =>
+                            _TeamLogoPlaceholder(teamColor: theme.primaryColor),
+                    errorWidget:
+                        (context, url, error) =>
+                            _TeamLogoPlaceholder(teamColor: theme.primaryColor),
+                    fit: BoxFit.contain, // Or BoxFit.cover
+                  ),
+                ),
                 const SizedBox(height: 8),
-                _TeamLogoPlaceholder(teamColor: theme.colorScheme.secondary),
+                SizedBox(
+                  // Wrap with SizedBox to constrain size
+                  width: 36,
+                  height: 36,
+                  child: CachedNetworkImage(
+                    imageUrl: match.awayTeam.crest ?? '',
+                    placeholder:
+                        (context, url) => _TeamLogoPlaceholder(
+                          teamColor: theme.colorScheme.secondary,
+                        ),
+                    errorWidget:
+                        (context, url, error) => _TeamLogoPlaceholder(
+                          teamColor: theme.colorScheme.secondary,
+                        ),
+                    fit: BoxFit.contain, // Or BoxFit.cover
+                  ),
+                ),
               ],
             ),
             const SizedBox(width: 12),

@@ -81,7 +81,11 @@ class TeamRef {
   @HiveField(1)
   final String name;
 
-  TeamRef({required this.id, required this.name});
+  @HiveField(2) // Next available index
+  @JsonKey(name: 'crest')
+  final String? crest;
+
+  TeamRef({required this.id, required this.name, this.crest});
 
   factory TeamRef.fromJson(Map<String, dynamic> json) =>
       _$TeamRefFromJson(json);
