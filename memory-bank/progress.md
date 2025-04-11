@@ -18,6 +18,8 @@
 *   Filtering match list by favorites (using Hive data).
 *   Basic caching of fetched match details and lists using Hive.
 *   Cross-platform builds (Web, macOS, iOS).
+*   Mandatory initial league selection screen.
+*   Ability to change league selection from main screen.
 
 ## 3. What's Next (Post Phase 1 - High Level)
 *   Step 2: Research Soccer Data APIs
@@ -44,6 +46,8 @@
 *   Cross-Platform Builds Successful (2025-04-11)
 *   Web App Deployed & Working via Vercel (using Serverless Function Proxy) (2025-04-11)
 *   Integrated Hive for Favorites & Match Caching (2025-04-11)
+*   Implemented Mandatory League Selection & Change Flow (2025-04-11)
+*   Fixed Previous Match Score Display Logic (Corrected JSON keys) (2025-04-11)
 
 ## 6. Performance Notes (Initial - Post Lighthouse)
 *   Release builds completed successfully for all platforms.

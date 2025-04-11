@@ -112,11 +112,11 @@ class Score {
 class ScoreTime {
   // API uses homeTeam/awayTeam keys here too
   @HiveField(0)
-  @JsonKey(name: 'homeTeam')
+  @JsonKey(name: 'home') // Corrected key name
   final int? homeScore;
 
   @HiveField(1)
-  @JsonKey(name: 'awayTeam')
+  @JsonKey(name: 'away') // Corrected key name
   final int? awayScore;
 
   ScoreTime({this.homeScore, this.awayScore});

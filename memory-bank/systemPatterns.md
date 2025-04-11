@@ -30,6 +30,22 @@
     *   Notifier calls `FavoritesRepository` methods (`addFavorite`, `removeFavorite`).
     *   `HiveFavoritesRepository` implementation interacts with Hive `favoritesBox`.
     *   `watchFavorites` in repository emits updates from the box, powering `favoritesStreamProvider`.
+*   **Initial Routing:**
+    *   App starts with `InitialRouteDispatcher`.
+    *   Dispatcher watches `userSelectionProvider` (backed by Hive).
+    *   If selection exists, navigates to `MatchListScreen`.
+    *   If no selection, navigates to `SelectionScreen`.
+*   **User Selection Flow:**
+    *   `SelectionScreen` fetches leagues via `availableLeaguesProvider`.
+    *   User selects league, state managed locally in `SelectionScreen`.
+    *   On save, `SelectionRepository.saveSelection()` is called (persists to Hive).
+    *   `userSelectionProvider` is invalidated.
+    *   Navigate to `MatchListScreen` (replacing `SelectionScreen`).
+*   **Changing Selection:**
+    *   `MatchListScreen` has an edit button.
+    *   Button uses `Navigator.push()` to show `SelectionScreen`.
+    *   Saving follows the normal selection flow.
+    *   Using the back button from `SelectionScreen` discards changes.
 
 ## 4. Key Design Patterns (Anticipated)
 *   Repository Pattern (for data abstraction)

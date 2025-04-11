@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../app/providers.dart'; // Import providers
 import '../../domain/match.dart' as domain; // Import custom Match with prefix
 import '../widgets/match_list_item.dart'; // Import list item widget
+import '../../../selection/presentation/selection_screen.dart'; // Import SelectionScreen for navigation
 import '../../../favorites/domain/favorite.dart'; // Import Favorite model
 
 // Displays lists of upcoming and previous matches using Tabs
@@ -59,6 +60,18 @@ class _MatchListScreenState extends ConsumerState<MatchListScreen>
               showCheckmark: false, // Keep checkmark off for toggle style
               // selectedColor is now handled by the theme
             ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.edit_note), // Or Icons.settings, Icons.tune
+            tooltip: 'Change League Selection',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const SelectionScreen(),
+                ),
+              );
+            },
           ),
         ],
       ),

@@ -1,10 +1,11 @@
 # Active Context: Dynamic Sports Match Tracker
 
 **Version:** 1.0 (Initial)
-**Date:** 2025-04-11 (Updated after Hive integration)
+**Date:** 2025-04-11 (Updated after Score Fix)
 
 ## 1. Current Focus
-*   Completed integration of Hive for local persistence (favorites and match caching).
+*   Completed implementation of mandatory league selection and ability to change selection.
+*   Fixed score display logic for previous matches by correcting JSON keys.
 *   Reviewing next steps post-Phase 1.
 
 ## 2. Recent Changes (End of Phase 1)
@@ -20,6 +21,9 @@
 *   Implemented basic polling for live updates.
 *   Verified builds and basic functionality on Web, macOS, iOS.
 *   **Integrated Hive for local persistence**, replacing `shared_preferences` for favorites and adding basic caching for match data. (2025-04-11)
+*   **Implemented mandatory league selection** flow using Hive persistence. (2025-04-11)
+*   **Added ability to change league selection** from main screen. (2025-04-11)
+*   **Fixed score display logic** for finished matches by correcting JSON keys in `ScoreTime` model. (2025-04-11)
 
 ## 3. Next Steps (Post Phase 1)
 *   Refine UI/UX according to design principles (Step 5 details).

@@ -254,6 +254,6 @@ Score _$ScoreFromJson(Map<String, dynamic> json) => Score(
     );
 
 ScoreTime _$ScoreTimeFromJson(Map<String, dynamic> json) => ScoreTime(
-      homeScore: (json['homeTeam'] as num?)?.toInt(),
-      awayScore: (json['awayTeam'] as num?)?.toInt(),
+      homeScore: (json['home'] as num?)?.toInt(),
+      awayScore: (json['away'] as num?)?.toInt(),
     );
