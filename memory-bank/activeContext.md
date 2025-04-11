@@ -31,6 +31,7 @@
 *   **Implemented Modal Match Details:** Replaced navigation to `MatchDetailScreen` with a modal popup (`MatchDetailModal`) shown via `showGeneralDialog` with background blur. Simplified modal background to linear gradient. (2025-04-11)
 *   **Implemented Skeleton Loading:** Added `skeletonizer` package and integrated skeleton loading states into `MatchListScreen`, `MatchDetailModal`, and `SelectionScreen`. (2025-04-11)
 *   **Pushed changes to GitHub** (2025-04-11)
+*   **Implemented Team & League Crests:** Updated data models (`TeamRef`, `CompetitionRef`), added `cached_network_image` dependency, updated UI (`MatchListItem`, `MatchDetailModal`, `LeagueSelectorCard`), and created Vercel proxy (`api/crestProxy.ts`) to handle image CORS issues. (2025-04-11)
 
 ## 3. Next Steps (Post Phase 1)
 *   Refine UI/UX according to **gradient theme** (custom components, glossy effects?).

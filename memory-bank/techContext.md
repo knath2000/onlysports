@@ -23,7 +23,8 @@
 *   `hive`: Local Persistence (Key-Value & Object Storage)
 *   `hive_flutter`: Flutter helpers for Hive
 *   `path_provider`: Finding file system paths for Hive
-
+*   `skeletonizer`: Skeleton loading animations
+*   `cached_network_image`: Network image loading with caching/placeholders
 ## 4. Dependencies to be Determined/Researched
 *   **State Management:** (See `systemPatterns.md` - Step 4)
 *   **HTTP Client:** (e.g., `http`, `dio` - for API communication - Step 2/6)

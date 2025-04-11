@@ -245,12 +245,25 @@ class _MatchListScreenState extends ConsumerState<MatchListScreen>
 
         // Display the list of matches
         // Display the filtered list of matches
-        return ListView.builder(
-          itemCount: filteredMatches.length, // Use filtered list length
-          itemBuilder: (context, index) {
-            final match = filteredMatches[index]; // Use filtered list item
-            return MatchListItem(match: match);
-          },
+        // Wrap with Container -> Center to constrain width and center the list
+        return Container(
+          alignment:
+              Alignment.topCenter, // Align list to top within the container
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(
+                maxWidth: 800,
+              ), // Max width for the list
+              child: ListView.builder(
+                itemCount: filteredMatches.length, // Use filtered list length
+                itemBuilder: (context, index) {
+                  final match =
+                      filteredMatches[index]; // Use filtered list item
+                  return MatchListItem(match: match);
+                },
+              ),
+            ),
+          ),
         );
       },
       // Use shared loading indicator
