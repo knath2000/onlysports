@@ -13,7 +13,11 @@ const corsHandler = cors({origin: true});
 // Use Firebase Functions environment configuration:
 // firebase functions:config:set football_data.token="YOUR_API_TOKEN"
 // Then access via functions.config().football_data.token
-const FOOTBALL_DATA_API_TOKEN = "e62b8b6bb1364e64aa280984a5924696";
+// Access token from Firebase environment config
+// eslint-disable-next-line max-len
+
+// Access token from process.env (set via functions:config:set)
+const FOOTBALL_DATA_API_TOKEN = process.env.FOOTBALL_DATA_TOKEN;
 const FOOTBALL_DATA_BASE_URL = "https://api.football-data.org/v4";
 
 export const footballDataProxy = functions.https.onRequest(
@@ -34,6 +38,14 @@ export const footballDataProxy = functions.https.onRequest(
 
       if (!targetPath) {
         response.status(400).send("Missing 'path' in request body.");
+        return;
+      }
+      // Check if token was loaded correctly from config
+      if (!FOOTBALL_DATA_API_TOKEN) {
+        console.error("Football Data API token is not configured.");
+        response
+          .status(500)
+          .send("Server configuration error: API token missing.");
         return;
       }
 
