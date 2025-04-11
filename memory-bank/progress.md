@@ -48,6 +48,7 @@
 *   Integrated Hive for Favorites & Match Caching (2025-04-11)
 *   Implemented Mandatory League Selection & Change Flow (2025-04-11)
 *   Fixed Previous Match Score Display Logic (Corrected JSON keys) (2025-04-11)
+*   Refactored UI Alignment (Centered AppBar Title & List Item Text) (2025-04-11)
 
 ## 6. Performance Notes (Initial - Post Lighthouse)
 *   Release builds completed successfully for all platforms.

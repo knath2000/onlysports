@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'providers.dart'; // Import global providers
 import '../features/selection/presentation/selection_screen.dart';
 import '../features/matches/presentation/screens/match_list_screen.dart';
+import '../shared/widgets/shared_loading_indicator.dart'; // Import shared loading
+import '../shared/widgets/shared_error_message.dart'; // Import shared error
 
 /// Determines the initial screen based on whether the user
 /// has already made a league selection.
@@ -25,21 +27,17 @@ class InitialRouteDispatcher extends ConsumerWidget {
         }
       },
       // Show a loading indicator while checking persistence
-      loading:
-          () =>
-              const Scaffold(body: Center(child: CircularProgressIndicator())),
+      // Use shared loading indicator
+      loading: () => const Scaffold(body: SharedLoadingIndicator()),
       // Show an error screen if persistence fails to load
-      error: (err, stack) {
-        print('Error loading user selection: $err\n$stack');
-        return Scaffold(
-          body: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text('Error loading preferences: $err'),
+      // Use shared error message widget
+      error:
+          (err, stack) => Scaffold(
+            body: SharedErrorMessage(
+              error: 'Failed to load user preferences: $err',
+              // No retry action defined here, as it's a critical startup error
             ),
           ),
-        );
-      },
     );
   }
 }

@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../../../app/providers.dart'; // Import providers
 // Import custom Match with prefix
+import '../../../../shared/widgets/shared_loading_indicator.dart'; // Import shared loading
+import '../../../../shared/widgets/shared_error_message.dart'; // Import shared error
 
 // Displays detailed information for a single match
 class MatchDetailScreen extends ConsumerWidget {
@@ -85,13 +87,15 @@ class MatchDetailScreen extends ConsumerWidget {
             ),
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stackTrace) {
-          // TODO: Improve error display
-          print('Error loading match details for $matchId: $error');
-          print(stackTrace);
-          return Center(child: Text('Error loading details: $error'));
-        },
+        // Use shared loading indicator
+        loading: () => const SharedLoadingIndicator(),
+        // Use shared error message widget with retry callback
+        error:
+            (error, stackTrace) => SharedErrorMessage(
+              error: 'Failed to load match details: $error',
+              // Retry by refreshing the specific family member of the provider
+              onRetry: () => ref.refresh(liveMatchStreamProvider(matchId)),
+            ),
       ),
     );
   }

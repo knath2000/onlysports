@@ -1,11 +1,11 @@
 # Active Context: Dynamic Sports Match Tracker
 
 **Version:** 1.0 (Initial)
-**Date:** 2025-04-11 (Updated after Score Fix)
+**Date:** 2025-04-11 (Updated after UI Alignment)
 
 ## 1. Current Focus
-*   Completed implementation of mandatory league selection and ability to change selection.
-*   Fixed score display logic for previous matches by correcting JSON keys.
+*   Completed UI alignment refactoring (centered AppBar title and list item text).
+*   Pushed latest changes to GitHub.
 *   Reviewing next steps post-Phase 1.
 
 ## 2. Recent Changes (End of Phase 1)
@@ -24,6 +24,7 @@
 *   **Implemented mandatory league selection** flow using Hive persistence. (2025-04-11)
 *   **Added ability to change league selection** from main screen. (2025-04-11)
 *   **Fixed score display logic** for finished matches by correcting JSON keys in `ScoreTime` model. (2025-04-11)
+*   **Refactored UI Alignment** (Centered AppBar Title & List Item Text). (2025-04-11)
 
 ## 3. Next Steps (Post Phase 1)
 *   Refine UI/UX according to design principles (Step 5 details).

@@ -5,6 +5,8 @@ import '../../matches/domain/match.dart'
     show CompetitionRef; // Only import CompetitionRef
 import '../domain/user_selection.dart';
 import '../../matches/presentation/screens/match_list_screen.dart'; // For navigation
+import '../../../shared/widgets/shared_loading_indicator.dart'; // Import shared loading
+import '../../../shared/widgets/shared_error_message.dart'; // Import shared error
 
 class SelectionScreen extends ConsumerStatefulWidget {
   const SelectionScreen({super.key});
@@ -111,21 +113,14 @@ class _SelectionScreenState extends ConsumerState<SelectionScreen> {
                 ],
               );
             },
-            loading: () => const CircularProgressIndicator(),
-            error: (error, stack) {
-              print('Error loading leagues: $error\n$stack');
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('Error loading leagues: $error'),
-                  const SizedBox(height: 10),
-                  ElevatedButton(
-                    onPressed: () => ref.refresh(availableLeaguesProvider),
-                    child: const Text('Retry'),
-                  ),
-                ],
-              );
-            },
+            // Use shared loading indicator
+            loading: () => const SharedLoadingIndicator(),
+            // Use shared error message widget with retry callback
+            error:
+                (error, stack) => SharedErrorMessage(
+                  error: 'Failed to load available leagues: $error',
+                  onRetry: () => ref.refresh(availableLeaguesProvider),
+                ),
           ),
         ),
       ),
