@@ -1,4 +1,14 @@
 {
+  "builds": [
+    {
+      "src": "pubspec.yaml",
+      "use": "@vercel/flutter",
+      "config": {
+        "flutterVersion": "stable",
+        "buildCommand": "sh build.sh" 
+      }
+    }
+  ],
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ]
