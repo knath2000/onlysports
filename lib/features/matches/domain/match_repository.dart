@@ -12,6 +12,8 @@ abstract class MatchRepository {
     String? team,
     DateTime? date,
   });
-  Future<Match?> getMatchDetails(String matchId);
+  Stream<Match?> getMatchDetails(
+    String matchId,
+  ); // Changed to Stream for potential updates/caching
   // Add methods for favorites if managed here
 }

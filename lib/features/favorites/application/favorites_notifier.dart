@@ -1,86 +1,52 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../infrastructure/favorites_repository.dart';
+import '../domain/favorites_repository.dart'; // Import domain interface
+import '../domain/favorite.dart'; // Import Favorite model
+import '../../../app/providers.dart'; // Import global providers (Corrected path)
 
-// State Notifier for managing the list of favorite team IDs
-class FavoritesNotifier extends StateNotifier<AsyncValue<List<String>>> {
+// State Notifier for managing favorite add/remove ACTIONS
+// The actual list state is handled by favoritesStreamProvider
+class FavoritesNotifier extends StateNotifier<AsyncValue<void>> {
   final FavoritesRepository _repository;
 
-  FavoritesNotifier(this._repository) : super(const AsyncValue.loading()) {
-    _loadFavorites(); // Load initial favorites when notifier is created
-  }
+  // Constructor now takes the repository directly
+  FavoritesNotifier(this._repository)
+    : super(const AsyncValue.data(null)); // Initial state is idle/success
 
-  // Load favorites from the repository
-  Future<void> _loadFavorites() async {
+  // _loadFavorites is no longer needed, UI will watch favoritesStreamProvider
+
+  // Add a team to favorites - takes the full Favorite object now
+  Future<void> addFavorite(Favorite favorite) async {
+    state = const AsyncValue.loading(); // Set state to loading
     try {
-      final ids = await _repository.loadFavoriteTeamIds();
-      state = AsyncValue.data(ids);
-    } catch (e, s) {
-      print('Error loading favorites: $e');
-      state = AsyncValue.error(e, s);
-    }
-  }
-
-  // Add a team to favorites
-  Future<void> addFavorite(String teamId) async {
-    // Optimistically update the state first for faster UI feedback
-    state.whenData((currentIds) {
-      if (!currentIds.contains(teamId)) {
-        state = AsyncValue.data([...currentIds, teamId]);
-      }
-    });
-
-    try {
-      await _repository.addFavorite(teamId);
-      // Optionally reload or just trust optimistic update if repository is reliable
-      // await _loadFavorites(); // Uncomment to reload after successful save
+      await _repository.addFavorite(favorite);
+      state = const AsyncValue.data(null); // Set state to success
     } catch (e, s) {
       print('Error adding favorite: $e');
-      // Revert optimistic update on error
-      await _loadFavorites();
-      // Optionally expose error state to UI
+      state = AsyncValue.error(e, s); // Set state to error
     }
   }
 
-  // Remove a team from favorites
-  Future<void> removeFavorite(String teamId) async {
-    // Optimistic update
-    state.whenData((currentIds) {
-      if (currentIds.contains(teamId)) {
-        state = AsyncValue.data(
-          currentIds.where((id) => id != teamId).toList(),
-        );
-      }
-    });
-
+  // Remove a team from favorites - takes the integer teamId
+  Future<void> removeFavorite(int teamId) async {
+    state = const AsyncValue.loading(); // Set state to loading
     try {
       await _repository.removeFavorite(teamId);
-      // Optionally reload
-      // await _loadFavorites();
+      state = const AsyncValue.data(null); // Set state to success
     } catch (e, s) {
       print('Error removing favorite: $e');
-      // Revert optimistic update
-      await _loadFavorites();
-      // Optionally expose error state
+      state = AsyncValue.error(e, s); // Set state to error
     }
   }
 
-  // Helper to check if a team is favorite (synchronous check on current state)
-  bool isFavorite(String teamId) {
-    return state.maybeWhen(
-      data: (ids) => ids.contains(teamId),
-      orElse: () => false, // Default to false if loading/error
-    );
-  }
+  // isFavorite method removed - UI should use isFavoriteProvider from app/providers.dart
 }
 
-// Provider for the FavoritesRepository
-final favoritesRepositoryProvider = Provider<FavoritesRepository>((ref) {
-  return FavoritesRepository();
-});
+// Local repository provider removed - use the one from app/providers.dart
 
-// Provider for the FavoritesNotifier
+// Provider for the FavoritesNotifier - updated state type and repository source
 final favoritesNotifierProvider =
-    StateNotifierProvider<FavoritesNotifier, AsyncValue<List<String>>>((ref) {
+    StateNotifierProvider<FavoritesNotifier, AsyncValue<void>>((ref) {
+      // Watch the global repository provider
       final repository = ref.watch(favoritesRepositoryProvider);
       return FavoritesNotifier(repository);
     });

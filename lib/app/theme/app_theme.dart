@@ -19,12 +19,10 @@ class AppTheme {
       colorScheme: const ColorScheme.dark(
         primary: accentColor, // Used for primary interactive elements
         secondary:
-            accentColor, // Used for secondary interactive elements (e.g., FAB)
-        background: darkBackground, // Background of scaffolds
+            accentColor, // Background of scaffolds
         surface: darkSurface, // Background of cards, dialogs, etc.
         onPrimary: Colors.black, // Text/icon color on primary color
-        onSecondary: Colors.black, // Text/icon color on secondary color
-        onBackground: primaryTextColor, // Text/icon color on background
+        onSecondary: Colors.black, // Text/icon color on background
         onSurface: primaryTextColor, // Text/icon color on surface
         error: Colors.redAccent,
         onError: Colors.black,

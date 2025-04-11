@@ -13,15 +13,22 @@
 *   **iOS:** Flutter Mobile (Targeting recent iOS versions)
 *   **Build Tools:** Flutter SDK, Xcode (for iOS/macOS), Android Studio/SDK (if Android support added later)
 
-## 3. Key Dependencies (Initial - Others TBD)
+## 3. Key Dependencies (Selected)
 *   `flutter_sdk`: Core Flutter framework
 *   `cupertino_icons`: Default iOS-style icons
+*   `flutter_riverpod`: State Management
+*   `json_annotation`: JSON helper
+*   `dio`: HTTP Client
+*   `intl`: Date formatting
+*   `hive`: Local Persistence (Key-Value & Object Storage)
+*   `hive_flutter`: Flutter helpers for Hive
+*   `path_provider`: Finding file system paths for Hive
 
 ## 4. Dependencies to be Determined/Researched
 *   **State Management:** (See `systemPatterns.md` - Step 4)
 *   **HTTP Client:** (e.g., `http`, `dio` - for API communication - Step 2/6)
 *   **Animation Library:** (e.g., `rive`, `lottie` - Step 3/6)
-*   **Data Persistence:** (e.g., `shared_preferences`, `hive` - for favorites - Step 10)
+*   **Data Persistence:** Hive (Selected for favorites & match caching)
 *   **Real-time Communication:** football-data.org (free tier) likely does NOT support WebSockets/SSE. Real-time updates would require frequent polling of REST endpoints (respecting rate limits: 10/min). (Step 11)
 *   **JSON Serialization:** (e.g., `json_serializable` - Step 7)
 
@@ -43,5 +50,15 @@
 
 ## 7. Development Setup Notes
 *   (Add any specific setup instructions, environment variables, or tooling notes here as they arise)
+
+
+## 8. Deployment (Vercel - Web)
+*   **Framework Preset:** Other (Set in Vercel UI)
+*   **Build Command:** `sh build.sh` (Set in Vercel UI)
+*   **Output Directory:** `public` (Set in Vercel UI - Note: `build.sh` copies `build/web` contents to `public`)
+*   **Install Command:** Default/Empty
+*   **`build.sh`:** Clones Flutter SDK (stable), adds to PATH, runs `flutter build web --release`, copies `build/web` contents to `public/`.
+*   **`vercel.json`:** Contains rewrite rule `{"source": "/(.*)", "destination": "/index.html"}` for Flutter routing.
+*   **Vercel Serverless Function:** Used as proxy (`api/footballDataProxy.ts`) to handle API calls and CORS for the web build. API Key (`FOOTBALL_DATA_TOKEN`) is loaded via Vercel Environment Variables (`process.env.FOOTBALL_DATA_TOKEN`).
 
 *(This file tracks the specific technologies, libraries, APIs, and technical constraints of the project. It will be updated as dependencies are added and technical decisions are made, particularly in Steps 2, 3, 4, 6, 10, 11).*

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../../../app/providers.dart'; // Import providers
-import '../../domain/match.dart' as domain; // Import custom Match with prefix
+// Import custom Match with prefix
 
 // Displays detailed information for a single match
 class MatchDetailScreen extends ConsumerWidget {

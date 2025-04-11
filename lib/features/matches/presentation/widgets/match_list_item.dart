@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'; // Import Riverpod
 import 'package:intl/intl.dart';
 import '../../domain/match.dart' as domain;
+import '../../../../app/providers.dart'; // Import global providers
 import '../../../favorites/application/favorites_notifier.dart'; // Import favorites notifier
+import '../../../favorites/domain/favorite.dart'; // Import Favorite model
 import '../screens/match_detail_screen.dart';
 
 // Widget for displaying a single match in a list
@@ -64,19 +66,16 @@ class MatchListItem extends ConsumerWidget {
       trailing: Consumer(
         // Use Consumer to rebuild only the icon button
         builder: (context, ref, child) {
-          final isFav = ref.watch(
-            favoritesNotifierProvider.select(
-              (asyncValue) => asyncValue.maybeWhen(
-                data:
-                    (ids) => ids.contains(
-                      match.homeTeam.id.toString(),
-                    ), // Check home team for now
-                orElse: () => false,
-              ),
-            ),
+          // Watch the specific provider for this team's favorite status
+          final teamId = match.homeTeam.id; // Use int ID
+          final asyncIsFav = ref.watch(isFavoriteProvider(teamId));
+
+          // Handle loading/error states for the favorite check
+          final isFav = asyncIsFav.maybeWhen(
+            data: (isFavoriteResult) => isFavoriteResult,
+            orElse: () => false, // Default to false on loading/error
           );
           // TODO: Allow favoriting away team or league too? Needs design decision.
-          // For now, just using home team ID as an example.
 
           return IconButton(
             icon: Icon(
@@ -88,13 +87,22 @@ class MatchListItem extends ConsumerWidget {
             ),
             onPressed: () {
               final notifier = ref.read(favoritesNotifierProvider.notifier);
-              final teamId =
-                  match.homeTeam.id.toString(); // Example: home team ID
+              final teamIdInt = match.homeTeam.id; // Already have int ID
+              final teamName = match.homeTeam.name;
+
               if (isFav) {
-                notifier.removeFavorite(teamId);
+                notifier.removeFavorite(teamIdInt);
               } else {
-                notifier.addFavorite(teamId);
+                // Create Favorite object to add
+                final favoriteToAdd = Favorite(
+                  teamId: teamIdInt,
+                  teamName: teamName,
+                );
+                notifier.addFavorite(favoriteToAdd);
               }
+              // Invalidate the isFavoriteProvider for this ID to force a refresh
+              // after the action completes, ensuring the icon updates.
+              ref.invalidate(isFavoriteProvider(teamIdInt));
             },
           );
         },

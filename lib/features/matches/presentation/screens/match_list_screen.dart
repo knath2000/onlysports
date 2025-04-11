@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../app/providers.dart'; // Import providers
 import '../../domain/match.dart' as domain; // Import custom Match with prefix
 import '../widgets/match_list_item.dart'; // Import list item widget
-import '../../../favorites/application/favorites_notifier.dart'; // Import favorites notifier
+import '../../../favorites/domain/favorite.dart'; // Import Favorite model
 
 // Displays lists of upcoming and previous matches using Tabs
 class MatchListScreen extends ConsumerStatefulWidget {
@@ -88,15 +88,18 @@ class _MatchListScreenState extends ConsumerState<MatchListScreen>
         }
 
         // --- Filtering Logic ---
-        final favoriteIds =
-            ref.watch(favoritesNotifierProvider).asData?.value ?? [];
+        // Watch the stream of Favorite objects
+        final asyncFavorites = ref.watch(favoritesStreamProvider);
+        final List<Favorite> favorites = asyncFavorites.asData?.value ?? [];
+        // Extract just the IDs for efficient lookup
+        final favoriteTeamIds = favorites.map((fav) => fav.teamId).toSet();
+
         final filteredMatches =
             _showOnlyFavorites
                 ? matches.where((match) {
-                  // Simple filter: show match if home OR away team is favorite
-                  // TODO: Make filtering logic more robust/configurable
-                  return favoriteIds.contains(match.homeTeam.id.toString()) ||
-                      favoriteIds.contains(match.awayTeam.id.toString());
+                  // Check if either team's ID is in the set of favorite IDs
+                  return favoriteTeamIds.contains(match.homeTeam.id) ||
+                      favoriteTeamIds.contains(match.awayTeam.id);
                 }).toList()
                 : matches; // Show all if filter is off
 

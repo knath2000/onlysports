@@ -14,8 +14,9 @@
 *   Navigating to Match Detail Screen.
 *   Displaying basic match details.
 *   Basic polling for live updates on detail screen.
-*   Adding/Removing favorite teams (via home team ID) using `shared_preferences`.
-*   Filtering match list by favorites.
+*   Adding/Removing favorite teams using Hive persistence.
+*   Filtering match list by favorites (using Hive data).
+*   Basic caching of fetched match details and lists using Hive.
 *   Cross-platform builds (Web, macOS, iOS).
 
 ## 3. What's Next (Post Phase 1 - High Level)
@@ -31,7 +32,7 @@
 *   Code Refinement (Address TODOs, API Key Security).
 
 ## 4. Known Issues / Blockers
-*   API Key currently hardcoded in Firebase Function (Security Risk).
+*   ~~API Key currently hardcoded in Firebase Function (Security Risk).~~ (Fixed - Moved to Vercel env var)
 *   Polling for live updates is basic and subject to rate limits/API update frequency.
 *   UI is basic, lacks the planned custom components and animations.
 *   Filtering logic is basic (only home/away team ID).
@@ -41,6 +42,8 @@
 *   Memory Bank Initialized (2025-04-11)
 *   Phase 1 Core Functionality Implemented (Basic) (2025-04-11)
 *   Cross-Platform Builds Successful (2025-04-11)
+*   Web App Deployed & Working via Vercel (using Serverless Function Proxy) (2025-04-11)
+*   Integrated Hive for Favorites & Match Caching (2025-04-11)
 
 ## 6. Performance Notes (Initial - Post Lighthouse)
 *   Release builds completed successfully for all platforms.

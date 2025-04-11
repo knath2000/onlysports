@@ -15,8 +15,21 @@
 *   **Rationale for Choice:** Chosen for its performance, compile-time safety, flexibility, scalability, and automatic provider disposal. Well-suited for handling asynchronous operations (API calls, real-time data) and managing potentially complex UI state related to animations with relatively less boilerplate compared to Bloc.
 
 ## 3. Data Flow
-*   (To be detailed once API, Architecture, and State Management are chosen)
-*   Example: API -> Repository -> Use Case -> State Notifier -> UI
+*   **General Flow:** UI -> Riverpod Provider -> Repository (Interface) -> Repository Implementation (Infrastructure) -> Data Source (API/Hive)
+*   **Match Data:**
+    *   UI watches `matchDetailsProvider` (StreamProvider).
+    *   Provider calls `MatchRepository.getMatchDetails()`.
+    *   `ApiMatchRepository` implementation:
+        *   Emits cached match from Hive `matchesBox` (if available).
+        *   Fetches latest match details from API (via proxy).
+        *   Saves fetched match to Hive `matchesBox`.
+        *   Emits fetched match to the stream.
+*   **Favorites Data:**
+    *   UI watches `favoritesStreamProvider` for the list and `isFavoriteProvider` for individual status.
+    *   UI calls actions on `FavoritesNotifier`.
+    *   Notifier calls `FavoritesRepository` methods (`addFavorite`, `removeFavorite`).
+    *   `HiveFavoritesRepository` implementation interacts with Hive `favoritesBox`.
+    *   `watchFavorites` in repository emits updates from the box, powering `favoritesStreamProvider`.
 
 ## 4. Key Design Patterns (Anticipated)
 *   Repository Pattern (for data abstraction)

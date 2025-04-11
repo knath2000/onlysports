@@ -1,12 +1,11 @@
 # Active Context: Dynamic Sports Match Tracker
 
 **Version:** 1.0 (Initial)
-**Date:** 2025-04-11
+**Date:** 2025-04-11 (Updated after Hive integration)
 
 ## 1. Current Focus
-*   Initializing the project structure and Memory Bank documentation.
-*   Following the 12-step plan outlined in `PLAN.md`.
-*   Currently executing Step 1: Initialize Project & Memory Bank Structure.
+*   Completed integration of Hive for local persistence (favorites and match caching).
+*   Reviewing next steps post-Phase 1.
 
 ## 2. Recent Changes (End of Phase 1)
 *   Completed all 12 steps of the initial development plan (`PLAN.md`).
@@ -16,16 +15,17 @@
 *   Set up project structure, theme, dependencies.
 *   Implemented core data models for `football-data.org`.
 *   Built Match List (Tabs) & Detail Screens.
-*   Implemented basic Favorites persistence & UI toggle.
+*   Implemented basic Favorites persistence & UI toggle (using `shared_preferences` initially).
 *   Set up Firebase Function proxy for web CORS.
 *   Implemented basic polling for live updates.
 *   Verified builds and basic functionality on Web, macOS, iOS.
+*   **Integrated Hive for local persistence**, replacing `shared_preferences` for favorites and adding basic caching for match data. (2025-04-11)
 
 ## 3. Next Steps (Post Phase 1)
 *   Refine UI/UX according to design principles (Step 5 details).
 *   Implement complex animations using Rive (Step 3 research).
 *   Implement robust filtering for match lists.
-*   Create `memory-bank/progress.md`.
+*   ~~Create `memory-bank/progress.md`.~~ (Done)
 *   Improve error handling and loading states.
 *   Conduct performance profiling and optimization (Step 12 details).
 *   Address TODOs in the code (API key security, layout refinement, etc.).
@@ -34,7 +34,9 @@
 ## 4. Open Questions / Decisions (Post Phase 1)
 *   Finalize specific color palettes and typography.
 *   Design specific custom UI components and animations.
-*   Which Architectural Pattern will be adopted? (To be addressed in Step 4)
-*   Which specific Animation Libraries (Rive/Lottie) are best suited? (To be addressed in Step 3)
+*   ~~Which Architectural Pattern will be adopted?~~ (Decided: Clean Architecture inspired)
+*   ~~Which specific Animation Libraries (Rive/Lottie) are best suited?~~ (Decided: Rive)
+*   How to handle potential data migration if Hive schema changes?
+*   Strategy for more robust match list caching (currently only detail caching reads from Hive first).
 
 *(This file will be updated frequently to reflect the current state of development, decisions made, and immediate next actions.)*

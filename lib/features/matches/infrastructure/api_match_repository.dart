@@ -1,4 +1,6 @@
+import 'dart:async'; // Import async for StreamController
 import 'package:dio/dio.dart';
+import 'package:hive/hive.dart'; // Import Hive
 import '../domain/match.dart';
 import '../domain/match_repository.dart';
 
@@ -7,8 +9,10 @@ class ApiMatchRepository implements MatchRepository {
   final Dio _dio;
   // Relative path to the Vercel Serverless Function proxy
   final String _proxyPath = '/api/footballDataProxy';
+  late final Box<Match> _matchesBox; // Hive box instance
 
   ApiMatchRepository(this._dio) {
+    _matchesBox = Hive.box<Match>('matchesBox'); // Get the opened box
     // No need to set base URL or auth token here anymore,
     // as the proxy function handles that.
     _dio.interceptors.add(
@@ -55,7 +59,13 @@ class ApiMatchRepository implements MatchRepository {
       if (response.statusCode == 200 && response.data != null) {
         final List<dynamic> matchesJson = response.data['matches'] ?? [];
         // Assuming the proxy correctly forwards the 'matches' list
-        return matchesJson.map((json) => Match.fromJson(json)).toList();
+        final matches =
+            matchesJson.map((json) => Match.fromJson(json)).toList();
+        // Save fetched matches to Hive cache
+        for (var match in matches) {
+          _matchesBox.put(match.id, match);
+        }
+        return matches;
       } else {
         print(
           'Proxy Error (Upcoming): Status ${response.statusCode}, Data: ${response.data}',
@@ -91,7 +101,13 @@ class ApiMatchRepository implements MatchRepository {
 
       if (response.statusCode == 200 && response.data != null) {
         final List<dynamic> matchesJson = response.data['matches'] ?? [];
-        return matchesJson.map((json) => Match.fromJson(json)).toList();
+        final matches =
+            matchesJson.map((json) => Match.fromJson(json)).toList();
+        // Save fetched matches to Hive cache
+        for (var match in matches) {
+          _matchesBox.put(match.id, match);
+        }
+        return matches;
       } else {
         print(
           'Proxy Error (Previous): Status ${response.statusCode}, Data: ${response.data}',
@@ -110,35 +126,89 @@ class ApiMatchRepository implements MatchRepository {
   }
 
   @override
-  Future<Match?> getMatchDetails(String matchId) async {
-    final targetPath = '/matches/$matchId';
-    // No query params needed for fetching by ID usually
+  Stream<Match?> getMatchDetails(String matchId) {
+    // Use a StreamController to manage emitting cached and fetched data
+    final controller =
+        StreamController<
+          Match?
+        >.broadcast(); // Use broadcast if stream might be listened to multiple times
+    int? matchIdInt;
 
     try {
-      final response = await _callProxy(targetPath, null);
-
-      if (response.statusCode == 200 && response.data != null) {
-        // Assuming proxy forwards the direct match object or nested object correctly
-        // Adjust based on actual response structure forwarded by proxy
-        return Match.fromJson(response.data);
-        // Or if nested: return Match.fromJson(response.data['match']);
-      } else if (response.statusCode == 404) {
-        print('Match details not found (404) for ID: $matchId');
-        return null;
-      } else {
-        print(
-          'Proxy Error (Details): Status ${response.statusCode}, Data: ${response.data}',
-        );
-        throw Exception('Failed to load match details via proxy');
-      }
-    } on DioException catch (e) {
-      print('DioError calling proxy (Details): $e');
-      throw Exception(
-        'Network error fetching match details via proxy: ${e.message}',
-      );
+      matchIdInt = int.parse(matchId);
     } catch (e) {
-      print('Error processing proxy response (Details): $e');
-      throw Exception('Failed to process match details data via proxy');
+      print("Error parsing matchId '$matchId' to int: $e");
+      controller.addError(ArgumentError('Invalid matchId format: $matchId'));
+      controller.close();
+      return controller.stream;
     }
+
+    // --- Stream Logic ---
+    Future<void> fetchAndEmit() async {
+      // 1. Emit cached value immediately if it exists
+      final cachedMatch = _matchesBox.get(matchIdInt);
+      if (cachedMatch != null) {
+        if (!controller.isClosed) controller.add(cachedMatch);
+      }
+
+      // 2. Fetch from API
+      final targetPath = '/matches/$matchIdInt';
+      try {
+        final response = await _callProxy(targetPath, null);
+
+        if (response.statusCode == 200 && response.data != null) {
+          final fetchedMatch = Match.fromJson(response.data);
+          // 3. Save to Hive
+          await _matchesBox.put(fetchedMatch.id, fetchedMatch);
+          // 4. Emit fetched value
+          if (!controller.isClosed) controller.add(fetchedMatch);
+        } else if (response.statusCode == 404) {
+          print('Match details not found (404) for ID: $matchIdInt');
+          // If not found via API and wasn't cached, emit null
+          if (cachedMatch == null && !controller.isClosed) controller.add(null);
+        } else {
+          print(
+            'Proxy Error (Details): Status ${response.statusCode}, Data: ${response.data}',
+          );
+          if (!controller.isClosed)
+            controller.addError(
+              Exception(
+                'Failed to load match details via proxy (Status: ${response.statusCode})',
+              ),
+            );
+        }
+      } on DioException catch (e) {
+        print('DioError calling proxy (Details): $e');
+        if (!controller.isClosed)
+          controller.addError(
+            Exception(
+              'Network error fetching match details via proxy: ${e.message}',
+            ),
+          );
+      } catch (e) {
+        print('Error processing proxy response (Details): $e');
+        if (!controller.isClosed)
+          controller.addError(
+            Exception('Failed to process match details data via proxy'),
+          );
+      } finally {
+        // Close the controller only if no listeners remain or after a final value/error
+        // For simplicity here, we might rely on the listener cancelling,
+        // but closing after fetch ensures completion if no cache existed.
+        // A more robust solution might involve reference counting or timeouts.
+        // If we emitted something, we might keep it open for potential future updates.
+        // If we only emitted cache or nothing, closing might be okay.
+        // Let's close it for now if we haven't added a non-null value recently.
+        // This logic needs refinement based on desired stream behavior (live updates vs. one-shot fetch).
+        // For now, let's assume it's a fetch-and-complete stream.
+        if (!controller.isClosed) controller.close();
+      }
+    }
+
+    // Start the fetch process asynchronously
+    fetchAndEmit();
+
+    // Return the stream for the UI to listen to
+    return controller.stream;
   }
 }
