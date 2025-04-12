@@ -1,14 +1,14 @@
 # Active Context: Dynamic Sports Match Tracker
 
 **Version:** 1.0 (Initial)
-**Date:** 2025-04-11 (Updated after GitHub Push)
+**Date:** 2025-04-12 (Updated after web optimization)
 
 ## 1. Current Focus
-*   Pushed recent changes (gradient theme, modal details, skeleton loading, fixes) to GitHub.
-*   Preparing to update Memory Bank further.
-*   Next technical step: Performance optimization based on previous report analysis.
+*   Completed initial web load optimization investigation.
+*   Pushed latest changes (optimization attempts, build script revert) to GitHub.
+*   Next technical step: Continue with performance optimization (runtime profiling) or UI/UX refinement for the gradient theme.
 
-## 2. Recent Changes (End of Phase 1)
+## 2. Recent Changes (End of Phase 1 & Initial Optimizations)
 *   Completed all 12 steps of the initial development plan (`PLAN.md`).
 *   Initialized Memory Bank.
 *   Researched API, UI, Animation Libraries.
@@ -33,13 +33,19 @@
 *   **Pushed changes to GitHub** (2025-04-11)
 *   **Implemented Team & League Crests:** Updated data models (`TeamRef`, `CompetitionRef`), added `cached_network_image` dependency, updated UI (`MatchListItem`, `MatchDetailModal`, `LeagueSelectorCard`), and created Vercel proxy (`api/crestProxy.ts`) to handle image CORS issues. (2025-04-11)
 *   **Refactored Match List Layout:** Centered the list and constrained its maximum width on `MatchListScreen`. (2025-04-11)
+*   **Improved Web Load Perception:** Added dark background to `index.html` to eliminate white flash during engine load. (2025-04-12)
+*   **Implemented Deferred Loading:** Applied deferred loading to `MatchDetailModal` and `SelectionScreen` (minimal impact on bundle size observed). (2025-04-12)
+*   **Cleaned Dependencies:** Removed unused `shared_preferences` package. (2025-04-12)
+*   **Fixed Local Dev API Calls:** Added `.env` file requirement for `FOOTBALL_DATA_TOKEN` to resolve 404 errors when running locally via `flutter run`. (2025-04-12)
+*   **Investigated Web Renderers:** Confirmed HTML renderer is used for release builds; analyzed Wasm build size (~2.03MB vs ~2.4MB for HTML); confirmed `--web-renderer` flag is unavailable for `flutter build web` in Flutter 3.29.2. (2025-04-12)
+*   **Pushed optimization changes to GitHub** (2025-04-12)
 
 ## 3. Next Steps (Post Phase 1)
 *   Refine UI/UX according to **gradient theme** (custom components, glossy effects?).
 *   Implement complex animations using Rive (Step 3 research).
 *   Implement robust filtering for match lists.
 *   Improve error handling (beyond basic display).
-*   Conduct performance profiling and optimization (Currently reviewing report).
+*   Conduct performance profiling (runtime) and optimization.
 *   Address TODOs in the code (layout refinement, etc.).
 *   Consider features from "Future Considerations" in `projectbrief.md`.
 *   **Crucially:** Update `projectbrief.md` and `productContext.md` to reflect the shift away from the original dark theme / child theme towards the current gradient theme.
@@ -50,4 +56,6 @@
 *   How to handle potential data migration if Hive schema changes?
 *   Strategy for more robust match list caching (currently only detail caching reads from Hive first).
 *   Confirm final gradient colors/stops/direction.
+*   Is the ~2.4MB initial JS payload (HTML renderer) acceptable, or are further advanced optimizations needed (e.g., deferring larger features)?
+
 *(This file will be updated frequently to reflect the current state of development, decisions made, and immediate next actions.)*
