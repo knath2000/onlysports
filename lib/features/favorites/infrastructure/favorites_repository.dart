@@ -1,5 +1,4 @@
-import 'package:shared_preferences/shared_preferences.dart';
-
+// import 'package:shared_preferences/shared_preferences.dart'; // Removed - Migrated to Hive
 // Handles persistence of favorite team IDs
 class FavoritesRepository {
   static const _favoritesKey = 'favoriteTeamIds';

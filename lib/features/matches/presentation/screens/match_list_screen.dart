@@ -4,7 +4,8 @@ import '../../../../app/providers.dart'; // Import providers
 import '../../../../app/theme/app_theme.dart'; // Import AppTheme
 import '../../domain/match.dart' as domain; // Import custom Match with prefix
 import '../widgets/match_list_item.dart'; // Import list item widget
-import '../../../selection/presentation/selection_screen.dart'; // Import SelectionScreen for navigation
+import '../../../selection/presentation/selection_screen.dart'
+    deferred as selection_screen; // Import SelectionScreen DEFERRED
 import '../../../favorites/domain/favorite.dart'; // Import Favorite model
 import '../../../favorites/application/favorites_notifier.dart'; // Import for DragTarget
 
@@ -119,11 +120,18 @@ class _MatchListScreenState extends ConsumerState<MatchListScreen>
                     _CustomActionButtonPlaceholder(
                       icon: Icons.edit_rounded,
                       tooltip: 'Change League',
-                      onTap: () {
+                      onTap: () async {
+                        // Make async
+                        // Load the deferred library first
+                        await selection_screen.loadLibrary();
+                        // Check if the widget is still mounted before navigating
+                        if (!context.mounted) return;
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const SelectionScreen(),
+                            // Remove const and use deferred prefix
+                            builder:
+                                (context) => selection_screen.SelectionScreen(),
                           ),
                         );
                       },

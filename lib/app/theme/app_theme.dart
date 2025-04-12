@@ -51,13 +51,11 @@ class AppTheme {
       colorScheme: const ColorScheme.light(
         primary: primaryColor, // Primary interactive elements
         secondary: accentColor, // Secondary interactive elements
-        surface: lightSurface, // Background of cards, dialogs
-        background: lightBackground, // Overall background
+        surface: lightSurface, // Overall background
         error: errorColor,
         onPrimary: Colors.white, // Text/icon on primary color
         onSecondary: primaryTextColor, // Text/icon on secondary color
-        onSurface: primaryTextColor, // Text/icon on surface
-        onBackground: primaryTextColor, // Text/icon on background
+        onSurface: primaryTextColor, // Text/icon on background
         onError: Colors.white, // Text/icon on error color
       ),
 
@@ -335,16 +333,11 @@ class AppTheme {
       colorScheme: const ColorScheme.dark(
         primary: gradPrimaryColor,
         secondary: gradAccentColor,
-        surface: gradSurfaceColor,
-        background:
-            Colors
-                .black, // Underlying background color (though gradient covers it)
+        surface: gradSurfaceColor, // Underlying background color (though gradient covers it)
         error: gradErrorColor,
         onPrimary: Colors.black, // Text on primary buttons (blue)
         onSecondary: Colors.black, // Text on accent elements (yellow)
-        onSurface: gradPrimaryTextColor, // Text on cards/surfaces
-        onBackground:
-            gradPrimaryTextColor, // Text directly on background (less common)
+        onSurface: gradPrimaryTextColor, // Text directly on background (less common)
         onError: Colors.black, // Text on error color
       ),
 

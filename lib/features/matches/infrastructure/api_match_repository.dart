@@ -175,27 +175,30 @@ class ApiMatchRepository implements MatchRepository {
           print(
             'Proxy Error (Details): Status ${response.statusCode}, Data: ${response.data}',
           );
-          if (!controller.isClosed)
+          if (!controller.isClosed) {
             controller.addError(
               Exception(
                 'Failed to load match details via proxy (Status: ${response.statusCode})',
               ),
             );
+          }
         }
       } on DioException catch (e) {
         print('DioError calling proxy (Details): $e');
-        if (!controller.isClosed)
+        if (!controller.isClosed) {
           controller.addError(
             Exception(
               'Network error fetching match details via proxy: ${e.message}',
             ),
           );
+        }
       } catch (e) {
         print('Error processing proxy response (Details): $e');
-        if (!controller.isClosed)
+        if (!controller.isClosed) {
           controller.addError(
             Exception('Failed to process match details data via proxy'),
           );
+        }
       } finally {
         // Close the controller only if no listeners remain or after a final value/error
         // For simplicity here, we might rely on the listener cancelling,
@@ -239,7 +242,7 @@ class ApiMatchRepository implements MatchRepository {
             .map((json) => CompetitionRef.fromJson(json))
             .where(
               (comp) =>
-                  comp.id != null && comp.name != null && comp.name.isNotEmpty,
+                  comp.name.isNotEmpty,
             ) // Basic validation
             .toList();
       } else {

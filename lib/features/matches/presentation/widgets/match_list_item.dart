@@ -8,7 +8,8 @@ import '../../../../app/providers.dart'; // Import global providers
 import '../../../favorites/application/favorites_notifier.dart'; // Import favorites notifier
 import '../../../favorites/domain/favorite.dart'; // Import Favorite model
 // import '../screens/match_detail_screen.dart'; // No longer needed
-import 'match_detail_modal.dart'; // Import the new modal widget
+import 'match_detail_modal.dart'
+    deferred as match_detail_modal; // Import the new modal widget DEFERRED
 
 // Widget for displaying a single match in a list
 // Change to ConsumerWidget to access providers
@@ -139,7 +140,10 @@ class _MatchListItemState extends ConsumerState<MatchListItem>
             onTapDown: (_) => _animationController.forward(),
             onTapUp: (_) => _animationController.reverse(),
             onTapCancel: () => _animationController.reverse(),
-            onTap: () {
+            onTap: () async {
+              // Make onTap async
+              // Load the deferred library
+              await match_detail_modal.loadLibrary();
               // Show the modal dialog using showGeneralDialog for blur effect
               showGeneralDialog(
                 context: context,
@@ -160,7 +164,10 @@ class _MatchListItemState extends ConsumerState<MatchListItem>
                   Animation<double> secondaryAnimation,
                 ) {
                   // This builds the primary content of the dialog
-                  return MatchDetailModal(matchId: match.id.toString());
+                  // Use the deferred import prefix
+                  return match_detail_modal.MatchDetailModal(
+                    matchId: match.id.toString(),
+                  );
                 },
                 transitionBuilder: (
                   BuildContext buildContext,
@@ -360,16 +367,7 @@ class _MatchListItemState extends ConsumerState<MatchListItem>
 
     return InkWell(
       // Note: InkWell interaction might be slightly different in feedback/childWhenDragging
-      // Keep onTap logic simple or disable for feedback if needed
-      onTap: () {
-        // Show the modal dialog (same as in main build method)
-        showDialog(
-          context: context,
-          builder: (BuildContext dialogContext) {
-            return MatchDetailModal(matchId: match.id.toString());
-          },
-        );
-      },
+      // REMOVED redundant onTap handler from _buildCardContent
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 16.0),
         child: Row(

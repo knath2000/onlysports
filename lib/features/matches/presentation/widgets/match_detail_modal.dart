@@ -3,11 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../../../app/providers.dart';
 import 'package:cached_network_image/cached_network_image.dart'; // Import CachedNetworkImage
-import '../../../../app/theme/app_theme.dart'; // Import theme for gradient
+// Import theme for gradient
 // import '../../../../shared/widgets/shared_loading_indicator.dart'; // No longer needed
 import 'package:skeletonizer/skeletonizer.dart'; // Import skeletonizer
 import '../../../../shared/widgets/shared_error_message.dart';
-import '../../domain/match.dart' as domain; // Use prefix
+// Use prefix
 
 // Modal widget to display match details
 class MatchDetailModal extends ConsumerStatefulWidget {
