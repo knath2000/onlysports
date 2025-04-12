@@ -225,9 +225,10 @@ class ApiMatchRepository implements MatchRepository {
     // Target the /competitions endpoint
     const targetPath = '/competitions';
     // Usually no query params needed, but check API docs if filtering is possible/needed
-    // e.g., filter by plan: TIER_ONE for free tier
-    final queryParams = {
-      'plan': 'TIER_ONE', // Example: Filter for free tier leagues if supported
+    // e.g., filter by plan: TIER_ONE for free tier (REMOVED - potential cause of 404)
+    // Explicitly type the empty map
+    final Map<String, dynamic> queryParams = {
+      // 'plan': 'TIER_ONE',
     };
 
     try {
@@ -240,10 +241,7 @@ class ApiMatchRepository implements MatchRepository {
         // Filter out leagues without an ID or name, as they might be invalid/unusable
         return competitionsJson
             .map((json) => CompetitionRef.fromJson(json))
-            .where(
-              (comp) =>
-                  comp.name.isNotEmpty,
-            ) // Basic validation
+            .where((comp) => comp.name.isNotEmpty) // Basic validation
             .toList();
       } else {
         print(

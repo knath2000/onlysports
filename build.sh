@@ -16,7 +16,8 @@ flutter doctor
 
 # 3. Run the Flutter web build command
 echo "Building Flutter web app..."
-# It will use the HTML renderer because we set it in web/index.html
+# Note: --web-renderer flag is not available in Flutter 3.29.2 build command.
+# Renderer selection will use Flutter's default logic (likely auto or HTML).
 flutter build web --release
 
 
